@@ -1,0 +1,3402 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AiQuran - AI-Powered Qur'an Platform</title>
+    <meta name="description" content="AiQuran is the world's most intelligent Qur'anic learning assistant, providing instant answers, tafsir explanations, memorization support, and connections to Islamic scholars.">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Amiri:ital,wght@0,400;0,700;1,400&family=Noto+Kufi+Arabic:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-green: #0a7e4e;
+            --secondary-blue: #1a5fb4;
+            --accent-gold: #f5c211;
+            --spiritual-purple: #5d4e75;
+            --divine-indigo: #3a2a5a;
+            --dark-bg: #0a192f;
+            --card-bg: #112240;
+            --text-light: #e6f1ff;
+            --text-dim: #8892b0;
+            --islamic-pattern: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%231a5fb4' fill-opacity='0.05'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--dark-bg);
+            color: var(--text-light);
+            overflow-x: hidden;
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        
+        /* Three.js Background */
+        #three-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+        }
+        
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at center, rgba(10, 25, 47, 0.8) 0%, rgba(10, 25, 47, 0.95) 100%);
+            z-index: 0;
+            pointer-events: none;
+        }
+        
+        /* Header Styles */
+        header {
+            background: rgba(10, 25, 47, 0.95);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(26, 95, 180, 0.3);
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            transition: all 0.3s ease;
+        }
+        
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 0;
+        }
+        
+        .logo {
+            font-size: 1.8rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, var(--primary-green) 0%, var(--secondary-blue) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .logo i {
+            font-size: 1.5rem;
+            color: var(--accent-gold);
+        }
+        
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+            list-style: none;
+        }
+        
+        .nav-links a {
+            color: var(--text-light);
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+        
+        .nav-links a:hover {
+            color: var(--primary-green);
+        }
+        
+        .nav-links a::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: linear-gradient(135deg, var(--primary-green), var(--secondary-blue));
+            transition: width 0.3s ease;
+        }
+        
+        .nav-links a:hover::after {
+            width: 100%;
+        }
+        
+        .cta-button {
+            background: linear-gradient(135deg, var(--primary-green) 0%, var(--secondary-blue) 100%);
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+        }
+        
+        .cta-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(10, 126, 78, 0.4);
+        }
+        
+        /* Hero Section */
+        .hero {
+            padding: 8rem 0 4rem 0;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+            background: linear-gradient(180deg, rgba(10, 25, 47, 0.9) 0%, rgba(10, 25, 47, 0.7) 100%);
+            background-image: var(--islamic-pattern);
+        }
+        
+        .hero-content {
+            position: relative;
+            z-index: 1;
+        }
+        
+        .hero h1 {
+            font-size: 3.5rem;
+            font-weight: 800;
+            margin-bottom: 1.5rem;
+            background: linear-gradient(135deg, var(--primary-green) 0%, var(--secondary-blue) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: fadeInUp 1s ease-out;
+            font-family: 'Amiri', serif;
+        }
+        
+        .hero p {
+            font-size: 1.3rem;
+            margin-bottom: 2rem;
+            opacity: 0.9;
+            animation: fadeInUp 1s ease-out 0.2s both;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+            color: var(--text-dim);
+        }
+        
+        .hero-buttons {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
+            animation: fadeInUp 1s ease-out 0.4s both;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary-green) 0%, var(--secondary-blue) 100%);
+            color: white;
+            padding: 1rem 2rem;
+            border: none;
+            border-radius: 25px;
+            font-weight: 600;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(10, 126, 78, 0.4);
+        }
+        
+        .btn-secondary {
+            background: transparent;
+            color: var(--primary-green);
+            padding: 1rem 2rem;
+            border: 2px solid var(--primary-green);
+            border-radius: 25px;
+            font-weight: 600;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+        }
+        
+        .btn-secondary:hover {
+            background: var(--primary-green);
+            color: white;
+        }
+        
+        /* Features Section */
+        .features {
+            padding: 4rem 0;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .section-title {
+            text-align: center;
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 3rem;
+            background: linear-gradient(135deg, var(--primary-green) 0%, var(--secondary-blue) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            font-family: 'Amiri', serif;
+        }
+        
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-bottom: 3rem;
+        }
+        
+        .feature-card {
+            background: var(--card-bg);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 2rem;
+            text-align: center;
+            transition: all 0.3s ease;
+            border: 1px solid rgba(26, 95, 180, 0.2);
+            position: relative;
+            overflow: hidden;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background-image: var(--islamic-pattern);
+        }
+        
+        .feature-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(10, 126, 78, 0.1), transparent);
+            transition: left 0.5s;
+        }
+        
+        .feature-card:hover::before {
+            left: 100%;
+        }
+        
+        .feature-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px rgba(10, 126, 78, 0.2);
+            border-color: rgba(10, 126, 78, 0.5);
+        }
+        
+        .feature-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            background: linear-gradient(135deg, var(--primary-green) 0%, var(--secondary-blue) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .feature-card h3 {
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+            color: var(--text-light);
+        }
+        
+        .feature-card p {
+            color: var(--text-dim);
+            line-height: 1.6;
+        }
+        
+        /* Tafsir Explorer Section */
+        .tafsir-explorer {
+            padding: 4rem 0;
+            position: relative;
+            z-index: 1;
+            background: rgba(10, 25, 47, 0.6);
+            backdrop-filter: blur(10px);
+            background-image: var(--islamic-pattern);
+        }
+        
+        .tafsir-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 3rem;
+        }
+        
+        .tafsir-card {
+            background: var(--card-bg);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 1.5rem;
+            text-align: center;
+            border: 1px solid rgba(26, 95, 180, 0.2);
+            transition: all 0.3s ease;
+            cursor: pointer;
+            height: 100%;
+            background-image: var(--islamic-pattern);
+        }
+        
+        .tafsir-card:hover {
+            transform: translateY(-5px);
+            border-color: rgba(10, 126, 78, 0.5);
+            box-shadow: 0 20px 40px rgba(10, 126, 78, 0.2);
+        }
+        
+        .tafsir-icon {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            color: var(--accent-gold);
+        }
+        
+        .tafsir-card h3 {
+            font-size: 1.2rem;
+            margin-bottom: 0.5rem;
+            color: var(--text-light);
+        }
+        
+        .tafsir-card p {
+            color: var(--text-dim);
+            font-size: 0.9rem;
+        }
+        
+        .tafsir-period {
+            display: inline-block;
+            background: rgba(10, 126, 78, 0.2);
+            color: var(--primary-green);
+            padding: 0.25rem 0.75rem;
+            border-radius: 15px;
+            font-size: 0.8rem;
+            margin-top: 0.5rem;
+        }
+        
+        /* Hadith Explorer Section */
+        .hadith-explorer {
+            padding: 4rem 0;
+            position: relative;
+            z-index: 1;
+            background: rgba(10, 25, 47, 0.6);
+            backdrop-filter: blur(10px);
+            background-image: var(--islamic-pattern);
+        }
+        
+        .hadith-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 3rem;
+        }
+        
+        .hadith-card {
+            background: var(--card-bg);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 1.5rem;
+            text-align: center;
+            border: 1px solid rgba(26, 95, 180, 0.2);
+            transition: all 0.3s ease;
+            cursor: pointer;
+            height: 100%;
+            background-image: var(--islamic-pattern);
+        }
+        
+        .hadith-card:hover {
+            transform: translateY(-5px);
+            border-color: rgba(10, 126, 78, 0.5);
+            box-shadow: 0 20px 40px rgba(10, 126, 78, 0.2);
+        }
+        
+        .hadith-icon {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            color: var(--accent-gold);
+        }
+        
+        .hadith-card h3 {
+            font-size: 1.2rem;
+            margin-bottom: 0.5rem;
+            color: var(--text-light);
+        }
+        
+        .hadith-card p {
+            color: var(--text-dim);
+            font-size: 0.9rem;
+        }
+        
+        .hadith-count {
+            display: inline-block;
+            background: rgba(26, 95, 180, 0.2);
+            color: var(--secondary-blue);
+            padding: 0.25rem 0.75rem;
+            border-radius: 15px;
+            font-size: 0.8rem;
+            margin-top: 0.5rem;
+        }
+        
+        /* Hadith Chat Section */
+        .hadith-chat-section {
+            padding: 3rem 0;
+            background: rgba(10, 25, 47, 0.6);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            margin: 2rem auto;
+            max-width: 800px;
+            position: relative;
+            z-index: 1;
+            background-image: var(--islamic-pattern);
+        }
+        
+        .chat-container {
+            display: flex;
+            flex-direction: column;
+            height: 400px;
+            border-radius: 15px;
+            overflow: hidden;
+            background: rgba(17, 34, 64, 0.8);
+            border: 1px solid rgba(10, 126, 78, 0.3);
+        }
+        
+        .chat-header {
+            background: linear-gradient(135deg, rgba(10, 126, 78, 0.2) 0%, rgba(26, 95, 180, 0.2) 100%);
+            padding: 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid rgba(10, 126, 78, 0.3);
+        }
+        
+        .chat-messages {
+            flex: 1;
+            padding: 1rem;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+        
+        .message {
+            padding: 0.75rem 1rem;
+            border-radius: 15px;
+            max-width: 80%;
+            animation: fadeInUp 0.3s ease-out;
+        }
+        
+        .message.user {
+            background: linear-gradient(135deg, var(--primary-green) 0%, var(--secondary-blue) 100%);
+            color: white;
+            align-self: flex-end;
+        }
+        
+        .message.ai {
+            background: rgba(26, 95, 180, 0.2);
+            color: var(--text-dim);
+            align-self: flex-start;
+            border: 1px solid rgba(26, 95, 180, 0.3);
+        }
+        
+        .message.scholar-suggestion {
+            background: rgba(245, 194, 17, 0.2);
+            color: var(--text-dim);
+            align-self: flex-start;
+            border: 1px solid rgba(245, 194, 17, 0.3);
+        }
+        
+        .chat-input {
+            padding: 1rem;
+            border-top: 1px solid rgba(10, 126, 78, 0.3);
+            display: flex;
+            gap: 0.5rem;
+        }
+        
+        .chat-input input {
+            flex: 1;
+            padding: 0.75rem;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(10, 126, 78, 0.3);
+            border-radius: 25px;
+            outline: none;
+            color: white;
+            font-size: 1rem;
+        }
+        
+        .chat-input input::placeholder {
+            color: rgba(255, 255, 255, 0.6);
+        }
+        
+        .chat-input button {
+            background: linear-gradient(135deg, var(--primary-green) 0%, var(--secondary-blue) 100%);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        /* Scholar Connection Section */
+        .scholar-connection {
+            padding: 4rem 0;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .scholar-categories {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 3rem;
+        }
+        
+        .scholar-category-card {
+            background: var(--card-bg);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 1.5rem;
+            text-align: center;
+            border: 1px solid rgba(26, 95, 180, 0.2);
+            transition: all 0.3s ease;
+            cursor: pointer;
+            height: 100%;
+            background-image: var(--islamic-pattern);
+        }
+        
+        .scholar-category-card:hover {
+            transform: translateY(-5px);
+            border-color: rgba(10, 126, 78, 0.5);
+            box-shadow: 0 20px 40px rgba(10, 126, 78, 0.2);
+        }
+        
+        .scholar-category-icon {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            background: linear-gradient(135deg, var(--primary-green) 0%, var(--secondary-blue) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .scholar-category-card h3 {
+            font-size: 1.2rem;
+            margin-bottom: 0.5rem;
+            color: var(--text-light);
+        }
+        
+        .scholar-category-card p {
+            color: var(--text-dim);
+            font-size: 0.9rem;
+        }
+        
+        .scholar-count {
+            display: inline-block;
+            background: rgba(26, 95, 180, 0.2);
+            color: var(--secondary-blue);
+            padding: 0.25rem 0.75rem;
+            border-radius: 15px;
+            font-size: 0.8rem;
+            margin-top: 0.5rem;
+        }
+        
+        /* Scholar Directory Section */
+        .scholar-directory {
+            padding: 4rem 0;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .scholar-filters {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+        }
+        
+        .filter-button {
+            background: var(--card-bg);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(26, 95, 180, 0.2);
+            color: var(--text-dim);
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .filter-button.active,
+        .filter-button:hover {
+            background: rgba(10, 126, 78, 0.2);
+            border-color: var(--primary-green);
+            color: var(--primary-green);
+        }
+        
+        .scholars-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 2rem;
+        }
+        
+        .scholar-card {
+            background: var(--card-bg);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 2rem;
+            border: 1px solid rgba(26, 95, 180, 0.2);
+            transition: all 0.3s ease;
+            position: relative;
+            background-image: var(--islamic-pattern);
+        }
+        
+        .scholar-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px rgba(10, 126, 78, 0.2);
+            border-color: rgba(10, 126, 78, 0.5);
+        }
+        
+        .scholar-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+        
+        .scholar-avatar {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            margin-right: 1rem;
+            object-fit: cover;
+            border: 3px solid rgba(26, 95, 180, 0.3);
+        }
+        
+        .scholar-info h3 {
+            font-size: 1.3rem;
+            margin-bottom: 0.25rem;
+            color: var(--text-light);
+        }
+        
+        .scholar-specialty {
+            color: var(--secondary-blue);
+            font-size: 0.9rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .scholar-rating {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.9rem;
+        }
+        
+        .stars {
+            color: var(--accent-gold);
+        }
+        
+        .scholar-status {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.8rem;
+            padding: 0.25rem 0.75rem;
+            border-radius: 15px;
+            margin-top: 0.5rem;
+        }
+        
+        .status-online {
+            background: rgba(76, 175, 80, 0.2);
+            color: #4caf50;
+        }
+        
+        .status-busy {
+            background: rgba(255, 152, 0, 0.2);
+            color: #ff9800;
+        }
+        
+        .status-offline {
+            background: rgba(244, 67, 54, 0.2);
+            color: #f44336;
+        }
+        
+        .scholar-bio {
+            color: var(--text-dim);
+            margin-bottom: 1.5rem;
+            line-height: 1.5;
+        }
+        
+        .scholar-skills {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .skill-tag {
+            background: rgba(26, 95, 180, 0.1);
+            color: var(--secondary-blue);
+            padding: 0.25rem 0.75rem;
+            border-radius: 15px;
+            font-size: 0.8rem;
+        }
+        
+        .scholar-actions {
+            display: flex;
+            gap: 1rem;
+        }
+        
+        .scholar-actions button {
+            flex: 1;
+            padding: 0.75rem;
+            border: none;
+            border-radius: 10px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-book {
+            background: linear-gradient(135deg, var(--primary-green) 0%, var(--secondary-blue) 100%);
+            color: white;
+        }
+        
+        .btn-book:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(10, 126, 78, 0.3);
+        }
+        
+        .btn-profile {
+            background: rgba(255, 255, 255, 0.1);
+            color: var(--text-dim);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .btn-profile:hover {
+            background: rgba(255, 255, 255, 0.2);
+            color: var(--text-light);
+        }
+        
+        .scholar-availability {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 1rem;
+            padding-top: 1rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .availability-info {
+            font-size: 0.9rem;
+            color: var(--text-dim);
+        }
+        
+        .consultation-price {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: var(--primary-green);
+        }
+        
+        /* Pricing Section */
+        .pricing {
+            padding: 4rem 0;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .pricing-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-top: 3rem;
+        }
+        
+        .pricing-card {
+            background: var(--card-bg);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 2rem;
+            text-align: center;
+            border: 1px solid rgba(26, 95, 180, 0.2);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            background-image: var(--islamic-pattern);
+        }
+        
+        .pricing-card.featured {
+            background: rgba(10, 126, 78, 0.1);
+            border-color: var(--primary-green);
+            transform: scale(1.05);
+        }
+        
+        .pricing-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px rgba(10, 126, 78, 0.2);
+        }
+        
+        .pricing-card.featured:hover {
+            transform: translateY(-5px) scale(1.05);
+        }
+        
+        .pricing-card h3 {
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+            color: var(--text-light);
+        }
+        
+        .price {
+            font-size: 3rem;
+            font-weight: 800;
+            margin-bottom: 0.5rem;
+            background: linear-gradient(135deg, var(--primary-green) 0%, var(--secondary-blue) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .price-subtitle {
+            color: var(--text-dim);
+            margin-bottom: 2rem;
+        }
+        
+        .pricing-features {
+            list-style: none;
+            margin-bottom: 2rem;
+            text-align: left;
+            flex-grow: 1;
+        }
+        
+        .pricing-features li {
+            padding: 0.5rem 0;
+            padding-left: 1.5rem;
+            position: relative;
+            color: var(--text-dim);
+        }
+        
+        .pricing-features li::before {
+            content: '✓';
+            position: absolute;
+            left: 0;
+            color: var(--primary-green);
+            font-weight: bold;
+        }
+        
+        /* Chat Section */
+        .chat-section {
+            padding: 3rem 0;
+            background: rgba(10, 25, 47, 0.6);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            margin: 2rem auto;
+            max-width: 800px;
+            position: relative;
+            z-index: 1;
+            background-image: var(--islamic-pattern);
+        }
+        
+        /* Footer */
+        footer {
+            background: rgba(10, 25, 47, 0.8);
+            backdrop-filter: blur(10px);
+            color: var(--text-light);
+            padding: 3rem 0 1rem;
+            margin-top: 4rem;
+            border-top: 1px solid rgba(10, 126, 78, 0.2);
+            position: relative;
+            z-index: 1;
+            background-image: var(--islamic-pattern);
+        }
+        
+        .footer-content {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+        
+        .footer-section h3 {
+            margin-bottom: 1rem;
+            color: var(--primary-green);
+        }
+        
+        .footer-section ul {
+            list-style: none;
+        }
+        
+        .footer-section ul li {
+            margin-bottom: 0.5rem;
+        }
+        
+        .footer-section ul li a {
+            color: var(--text-dim);
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+        
+        .footer-section ul li a:hover {
+            color: var(--primary-green);
+        }
+        
+        .footer-bottom {
+            text-align: center;
+            padding-top: 2rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            color: var(--text-dim);
+        }
+        
+        /* Animations */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .nav-links {
+                display: none;
+            }
+            
+            .hero h1 {
+                font-size: 2.5rem;
+            }
+            
+            .hero p {
+                font-size: 1.1rem;
+            }
+            
+            .hero-buttons {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .features-grid,
+            .pricing-grid,
+            .tafsir-grid,
+            .hadith-grid,
+            .scholar-categories,
+            .scholars-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .pricing-card.featured {
+                transform: none;
+            }
+        }
+        
+        /* Loading States */
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 2px solid rgba(10, 126, 78, 0.3);
+            border-radius: 50%;
+            border-top-color: var(--primary-green);
+            animation: spin 1s ease-in-out infinite;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        /* Notification System */
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: rgba(17, 34, 64, 0.95);
+            backdrop-filter: blur(20px);
+            border-left: 4px solid var(--primary-green);
+            border-radius: 8px;
+            padding: 1rem;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            z-index: 1001;
+            transform: translateX(400px);
+            transition: transform 0.3s ease;
+            max-width: 300px;
+            border: 1px solid rgba(10, 126, 78, 0.3);
+        }
+        
+        .notification.show {
+            transform: translateX(0);
+        }
+        
+        .notification-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.5rem;
+        }
+        
+        .notification-title {
+            font-weight: 600;
+            color: var(--text-light);
+        }
+        
+        .notification-close {
+            background: none;
+            border: none;
+            font-size: 1.2rem;
+            cursor: pointer;
+            color: var(--text-dim);
+        }
+        
+        .notification-message {
+            color: var(--text-dim);
+            font-size: 0.9rem;
+        }
+        
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(5px);
+            z-index: 2000;
+        }
+        
+        .modal.active {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .modal-content {
+            background: rgba(17, 34, 64, 0.95);
+            backdrop-filter: blur(20px);
+            border-radius: 20px;
+            padding: 2rem;
+            max-width: 500px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+            position: relative;
+            border: 1px solid rgba(10, 126, 78, 0.3);
+            background-image: var(--islamic-pattern);
+        }
+        
+        .modal-close {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: var(--text-dim);
+        }
+        
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            color: var(--text-light);
+        }
+        
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 0.75rem;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(10, 126, 78, 0.3);
+            border-radius: 8px;
+            font-size: 1rem;
+            color: white;
+            transition: border-color 0.3s ease;
+        }
+        
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: var(--primary-green);
+        }
+        
+        .form-group input::placeholder,
+        .form-group textarea::placeholder {
+            color: rgba(255, 255, 255, 0.6);
+        }
+        
+        /* Progress Tracker */
+        .progress-tracker {
+            margin: 2rem 0;
+        }
+        
+        .progress-steps {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 1rem;
+        }
+        
+        .progress-step {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            flex: 1;
+        }
+        
+        .step-circle {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            color: var(--text-dim);
+            margin-bottom: 0.5rem;
+            transition: all 0.3s ease;
+        }
+        
+        .step-circle.active {
+            background: linear-gradient(135deg, var(--primary-green) 0%, var(--secondary-blue) 100%);
+            color: white;
+        }
+        
+        .step-circle.completed {
+            background: #4caf50;
+            color: white;
+        }
+        
+        .step-label {
+            font-size: 0.8rem;
+            color: var(--text-dim);
+            text-align: center;
+        }
+        
+        .progress-bar {
+            height: 4px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 2px;
+            overflow: hidden;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(135deg, var(--primary-green) 0%, var(--secondary-blue) 100%);
+            transition: width 0.3s ease;
+        }
+        
+        /* Dashboard Section */
+        .dashboard {
+            padding: 4rem 0;
+            position: relative;
+            z-index: 1;
+            display: none;
+        }
+        
+        .dashboard.active {
+            display: block;
+        }
+        
+        .dashboard-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+        
+        .dashboard-tabs {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+        }
+        
+        .dashboard-tab {
+            padding: 0.75rem 1.5rem;
+            background: var(--card-bg);
+            backdrop-filter: blur(10px);
+            border: 2px solid var(--primary-green);
+            border-radius: 25px;
+            color: var(--primary-green);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 600;
+        }
+        
+        .dashboard-tab.active {
+            background: linear-gradient(135deg, var(--primary-green) 0%, var(--secondary-blue) 100%);
+            color: white;
+        }
+        
+        .dashboard-content {
+            background: var(--card-bg);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 2rem;
+            border: 1px solid rgba(26, 95, 180, 0.2);
+            background-image: var(--islamic-pattern);
+        }
+        
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+        }
+        
+        .dashboard-widget {
+            background: rgba(10, 25, 47, 0.6);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 1.5rem;
+            border: 1px solid rgba(26, 95, 180, 0.2);
+            background-image: var(--islamic-pattern);
+        }
+        
+        .widget-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+        
+        .widget-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: var(--text-light);
+        }
+        
+        .widget-icon {
+            font-size: 1.5rem;
+            color: var(--primary-green);
+        }
+        
+        /* Chat Interface */
+        .chat-interface {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            width: 400px;
+            height: 600px;
+            background: rgba(17, 34, 64, 0.95);
+            backdrop-filter: blur(20px);
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
+            display: none;
+            flex-direction: column;
+            z-index: 1000;
+            overflow: hidden;
+            border: 1px solid rgba(10, 126, 78, 0.3);
+            background-image: var(--islamic-pattern);
+        }
+        
+        .chat-interface.active {
+            display: flex;
+        }
+        
+        .chat-header {
+            background: linear-gradient(135deg, rgba(10, 126, 78, 0.3) 0%, rgba(26, 95, 180, 0.3) 100%);
+            color: white;
+            padding: 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid rgba(10, 126, 78, 0.3);
+        }
+        
+        .chat-messages {
+            flex: 1;
+            padding: 1rem;
+            overflow-y: auto;
+            background: rgba(10, 25, 47, 0.5);
+        }
+        
+        .chat-input {
+            padding: 1rem;
+            border-top: 1px solid rgba(10, 126, 78, 0.3);
+            display: flex;
+            gap: 0.5rem;
+            background: rgba(17, 34, 64, 0.8);
+        }
+        
+        .chat-input input {
+            flex: 1;
+            padding: 0.75rem;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(10, 126, 78, 0.3);
+            border-radius: 25px;
+            outline: none;
+            color: white;
+        }
+        
+        .chat-input button {
+            background: linear-gradient(135deg, var(--primary-green) 0%, var(--secondary-blue) 100%);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .chat-toggle {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, var(--primary-green) 0%, var(--secondary-blue) 100%);
+            border-radius: 50%;
+            border: none;
+            color: white;
+            font-size: 1.5rem;
+            cursor: pointer;
+            box-shadow: 0 10px 30px rgba(10, 126, 78, 0.4);
+            transition: all 0.3s ease;
+            z-index: 999;
+        }
+        
+        .chat-toggle:hover {
+            transform: scale(1.1);
+        }
+        
+        /* Testimonials Section */
+        .testimonials {
+            padding: 4rem 0;
+            background: rgba(10, 25, 47, 0.6);
+            backdrop-filter: blur(10px);
+            position: relative;
+            z-index: 1;
+            background-image: var(--islamic-pattern);
+        }
+        
+        .testimonials-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+        }
+        
+        .testimonial-card {
+            background: var(--card-bg);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 2rem;
+            border: 1px solid rgba(26, 95, 180, 0.2);
+            transition: all 0.3s ease;
+            background-image: var(--islamic-pattern);
+        }
+        
+        .testimonial-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px rgba(10, 126, 78, 0.2);
+        }
+        
+        .testimonial-content {
+            font-style: italic;
+            color: var(--text-dim);
+            margin-bottom: 1.5rem;
+            line-height: 1.6;
+        }
+        
+        .testimonial-author {
+            display: flex;
+            align-items: center;
+        }
+        
+        .testimonial-avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            margin-right: 1rem;
+            object-fit: cover;
+        }
+        
+        .testimonial-info h4 {
+            color: var(--text-light);
+            margin-bottom: 0.25rem;
+        }
+        
+        .testimonial-info p {
+            color: var(--primary-green);
+            font-size: 0.9rem;
+        }
+        
+        /* Why Choose AiQuran Section */
+        .why-choose {
+            padding: 4rem 0;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .why-choose-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+        }
+        
+        .why-choose-card {
+            background: var(--card-bg);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 2rem;
+            text-align: center;
+            transition: all 0.3s ease;
+            border: 1px solid rgba(26, 95, 180, 0.2);
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background-image: var(--islamic-pattern);
+        }
+        
+        .why-choose-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px rgba(10, 126, 78, 0.2);
+        }
+        
+        .why-choose-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            background: linear-gradient(135deg, var(--primary-green) 0%, var(--secondary-blue) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .why-choose-card h3 {
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+            color: var(--text-light);
+        }
+        
+        .why-choose-card p {
+            color: var(--text-dim);
+            line-height: 1.6;
+        }
+        
+        /* Floating elements */
+        .floating {
+            animation: float 6s ease-in-out infinite;
+        }
+        
+        .floating-delay-1 {
+            animation-delay: 1s;
+        }
+        
+        .floating-delay-2 {
+            animation-delay: 2s;
+        }
+        
+        .floating-delay-3 {
+            animation-delay: 3s;
+        }
+        
+        /* Glow effect */
+        .glow {
+            box-shadow: 0 0 20px rgba(10, 126, 78, 0.5);
+        }
+        
+        /* Pulse animation */
+        @keyframes pulse {
+            0% {
+                box-shadow: 0 0 0 0 rgba(10, 126, 78, 0.7);
+            }
+            70% {
+                box-shadow: 0 0 0 10px rgba(10, 126, 78, 0);
+            }
+            100% {
+                box-shadow: 0 0 0 0 rgba(10, 126, 78, 0);
+            }
+        }
+        
+        .pulse {
+            animation: pulse 2s infinite;
+        }
+        
+        /* Decorative elements */
+        .decorative-element {
+            position: absolute;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(10, 126, 78, 0.2) 0%, rgba(10, 126, 78, 0) 70%);
+            z-index: -1;
+        }
+        
+        .decorative-1 {
+            width: 300px;
+            height: 300px;
+            top: -100px;
+            left: -100px;
+        }
+        
+        .decorative-2 {
+            width: 400px;
+            height: 400px;
+            bottom: -200px;
+            right: -200px;
+            background: radial-gradient(circle, rgba(26, 95, 180, 0.2) 0%, rgba(26, 95, 180, 0) 70%);
+        }
+        
+        .decorative-3 {
+            width: 200px;
+            height: 200px;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: radial-gradient(circle, rgba(245, 194, 17, 0.1) 0%, rgba(245, 194, 17, 0) 70%);
+        }
+    </style>
+</head>
+<body>
+    <!-- Three.js Background -->
+    <div id="three-container"></div>
+    <div class="overlay"></div>
+    
+    <!-- Decorative Elements -->
+    <div class="decorative-element decorative-1"></div>
+    <div class="decorative-element decorative-2"></div>
+    <div class="decorative-element decorative-3"></div>
+    
+    <!-- Header -->
+    <header>
+        <nav class="container">
+            <div class="logo">
+                <i class="fas fa-quran"></i>
+                AiQuran
+            </div>
+            <ul class="nav-links">
+                <li><a href="#home">Home</a></li>
+                <li><a href="#features">Features</a></li>
+                <li><a href="#tafsir">Tafsir</a></li>
+                <li><a href="#hadith">Hadith</a></li>
+                <li><a href="#scholars">Scholars</a></li>
+                <li><a href="#why-choose">Why Choose</a></li>
+                <li><a href="#testimonials">Testimonials</a></li>
+                <li><a href="#pricing">Pricing</a></li>
+                <li><a href="#" onclick="showDashboard()">Dashboard</a></li>
+            </ul>
+            <div>
+                <a href="#" class="cta-button" onclick="openModal('loginModal')">Login</a>
+                <a href="#" class="cta-button" onclick="openModal('signupModal')" style="margin-left: 10px;">Get Started</a>
+            </div>
+        </nav>
+    </header>
+    
+    <!-- Hero Section -->
+    <section class="hero" id="home">
+        <div class="container">
+            <div class="hero-content">
+                <h1 class="floating">Transform Your Qur'an Journey with AI</h1>
+                <p>AiQuran is the world's most intelligent Qur'anic learning assistant, providing instant answers, tafsir explanations, memorization support, and connections to Islamic scholars.</p>
+                <div class="hero-buttons">
+                    <a href="#" class="btn-primary pulse" onclick="openModal('signupModal')">Start Your Journey</a>
+                    <a href="#" class="btn-secondary" onclick="scrollToSection('scholars')">Connect with Scholars</a>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Chat Section -->
+    <section class="chat-section">
+        <div class="container">
+            <h2 class="section-title">Ask the Qur'an</h2>
+            <div class="chat-container">
+                <div class="chat-header">
+                    <div>
+                        <h3>AiQuran Assistant</h3>
+                        <div style="font-size: 0.9rem; opacity: 0.8;">Powered by AI & Islamic Scholarship</div>
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 10px;">
+                        <div style="width: 10px; height: 10px; background: #00ff00; border-radius: 50%; animation: pulse 2s infinite;"></div>
+                        <span style="font-size: 0.9rem;">Online</span>
+                    </div>
+                </div>
+                <div class="chat-messages" id="heroChatMessages">
+                    <div class="message ai">
+                        📖 Peace be upon you! I'm AiQuran, your AI-powered Qur'an assistant. Ask me anything about the Qur'an, and I'll provide answers with tafsir explanations. How can I support your learning journey today?
+                    </div>
+                </div>
+                <div class="chat-input">
+                    <input type="text" id="heroMessageInput" placeholder="Ask about the Qur'an..." onkeypress="handleHeroChatKeyPress(event)">
+                    <button onclick="sendHeroMessage()">📤</button>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Features Section -->
+    <section class="features" id="features">
+        <div class="container">
+            <h2 class="section-title">Platform Features</h2>
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">🤖</div>
+                    <h3>AI Q&A Chatbot</h3>
+                    <p>Ask natural-language questions and get instant Qur'anic responses with tafsir explanations from verified sources.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">📚</div>
+                    <h3>Tafsir Explorer</h3>
+                    <p>Compare verse interpretations from multiple classical scholars including Ibn Kathir, Al-Jalalayn, and more.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🔍</div>
+                    <h3>Semantic Search</h3>
+                    <p>AI-powered thematic and concept-based Qur'an search to find relevant verses on any topic.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🎧</div>
+                    <h3>Recitation & Memorization</h3>
+                    <p>Voice-corrected Hifz tool with tracking and Tajweed guidance to perfect your recitation.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">📅</div>
+                    <h3>Daily Study Plans</h3>
+                    <p>Personalized learning journeys focused on Prophets, Fiqh, Morals, and other Islamic topics.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🌐</div>
+                    <h3>Multilingual Access</h3>
+                    <p>Available in Arabic, English, Urdu, French, Bahasa, and 10+ other languages for global access.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Tafsir Explorer Section -->
+    <section class="tafsir-explorer" id="tafsir">
+        <div class="container">
+            <h2 class="section-title">Tafsir Explorer</h2>
+            <p style="text-align: center; margin-bottom: 3rem; color: var(--text-dim); max-width: 600px; margin-left: auto; margin-right: auto;">
+                Explore the Qur'an through the lens of classical Islamic scholarship. Compare interpretations from renowned scholars throughout history.
+            </p>
+            
+            <div class="tafsir-grid">
+                <div class="tafsir-card">
+                    <div class="tafsir-icon">📜</div>
+                    <h3>Ibn Kathir</h3>
+                    <p>Classical tafsir focusing on Qur'an explanation through hadith and narrations from the Prophet's companions.</p>
+                    <span class="tafsir-period">14th Century CE</span>
+                </div>
+                
+                <div class="tafsir-card">
+                    <div class="tafsir-icon">📖</div>
+                    <h3>Al-Jalalayn</h3>
+                    <p>Concise tafsir by Jalal al-Din al-Mahalli and his student Jalal al-Din al-Suyuti.</p>
+                    <span class="tafsir-period">15th Century CE</span>
+                </div>
+                
+                <div class="tafsir-card">
+                    <div class="tafsir-icon">🕌</div>
+                    <h3>Al-Tabari</h3>
+                    <p>One of the most comprehensive classical commentaries on the Qur'an, covering linguistic, legal, and historical aspects.</p>
+                    <span class="tafsir-period">9th-10th Century CE</span>
+                </div>
+                
+                <div class="tafsir-card">
+                    <div class="tafsir-icon">📚</div>
+                    <h3>Al-Qurtubi</h3>
+                    <p>Famous for its focus on legal rulings derived from Qur'anic verses and their linguistic analysis.</p>
+                    <span class="tafsir-period">13th Century CE</span>
+                </div>
+                
+                <div class="tafsir-card">
+                    <div class="tafsir-icon">🔍</div>
+                    <h3>Ibn Ashur</h3>
+                    <p>Modern tafsir emphasizing the coherence of the Qur'an and its contemporary relevance.</p>
+                    <span class="tafsir-period">20th Century CE</span>
+                </div>
+                
+                <div class="tafsir-card">
+                    <div class="tafsir-icon">🌟</div>
+                    <h3>Al-Baidawi</h3>
+                    <p>Balances between exegesis, linguistic analysis, and legal rulings in a concise format.</p>
+                    <span class="tafsir-period">13th Century CE</span>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Hadith Explorer Section -->
+    <section class="hadith-explorer" id="hadith">
+        <div class="container">
+            <h2 class="section-title">Hadith Explorer</h2>
+            <p style="text-align: center; margin-bottom: 3rem; color: var(--text-dim); max-width: 600px; margin-left: auto; margin-right: auto;">
+                Search and explore authentic Hadith collections with AI-powered insights and context. Understand the sayings and actions of Prophet Muhammad (PBUH).
+            </p>
+            
+            <div class="hadith-grid">
+                <div class="hadith-card">
+                    <div class="hadith-icon">📜</div>
+                    <h3>Sahih al-Bukhari</h3>
+                    <p>The most authentic collection of Hadith, compiled by Imam Bukhari. Contains over 7,000 narrations covering all aspects of Islam.</p>
+                    <span class="hadith-count">7,563 Hadith</span>
+                </div>
+                
+                <div class="hadith-card">
+                    <div class="hadith-icon">📖</div>
+                    <h3>Sahih Muslim</h3>
+                    <p>Second most authentic collection after Bukhari, compiled by Imam Muslim. Known for its precise methodology and authentic chains.</p>
+                    <span class="hadith-count">9,200 Hadith</span>
+                </div>
+                
+                <div class="hadith-card">
+                    <div class="hadith-icon">🕌</div>
+                    <h3>Sunan Abu Dawud</h3>
+                    <p>Comprehensive collection focusing on legal rulings and practical guidance, compiled by Imam Abu Dawud.</p>
+                    <span class="hadith-count">5,274 Hadith</span>
+                </div>
+                
+                <div class="hadith-card">
+                    <div class="hadith-icon">📚</div>
+                    <h3>Jami' al-Tirmidhi</h3>
+                    <p>Valuable collection with unique narrations and classifications of Hadith authenticity by Imam Tirmidhi.</p>
+                    <span class="hadith-count">3,956 Hadith</span>
+                </div>
+                
+                <div class="hadith-card">
+                    <div class="hadith-icon">🔍</div>
+                    <h3>Sunan Ibn Majah</h3>
+                    <p>Comprehensive collection covering various aspects of Islamic teachings, compiled by Imam Ibn Majah.</p>
+                    <span class="hadith-count">4,341 Hadith</span>
+                </div>
+                
+                <div class="hadith-card">
+                    <div class="hadith-icon">🌟</div>
+                    <h3>Sunan an-Nasa'i</h3>
+                    <p>Detailed collection focusing on legal aspects and additional narrations not found in other major collections.</p>
+                    <span class="hadith-count">5,758 Hadith</span>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Hadith Chat Section -->
+    <section class="hadith-chat-section">
+        <div class="container">
+            <h2 class="section-title">Search Hadith</h2>
+            <div class="chat-container">
+                <div class="chat-header">
+                    <div>
+                        <h3>Hadith Search Assistant</h3>
+                        <div style="font-size: 0.9rem; opacity: 0.8;">Powered by AI & Islamic Scholarship</div>
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 10px;">
+                        <div style="width: 10px; height: 10px; background: #00ff00; border-radius: 50%; animation: pulse 2s infinite;"></div>
+                        <span style="font-size: 0.9rem;">Online</span>
+                    </div>
+                </div>
+                <div class="chat-messages" id="hadithChatMessages">
+                    <div class="message ai">
+                        📜 Peace be upon you! I'm your Hadith search assistant. Ask me about any Hadith, topic, or saying of Prophet Muhammad (PBUH), and I'll provide authentic narrations with explanations. How can I assist you today?
+                    </div>
+                </div>
+                <div class="chat-input">
+                    <input type="text" id="hadithMessageInput" placeholder="Search for Hadith..." onkeypress="handleHadithChatKeyPress(event)">
+                    <button onclick="sendHadithMessage()">📤</button>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Scholar Connection Section -->
+    <section class="scholar-connection" id="scholars">
+        <div class="container">
+            <h2 class="section-title">Connect with Islamic Scholars</h2>
+            <p style="text-align: center; margin-bottom: 3rem; color: var(--text-dim); max-width: 600px; margin-left: auto; margin-right: auto;">
+                Get personalized guidance from verified Islamic scholars to complement AI insights. Our scholars can help confirm, verify, and enhance your understanding of the Qur'an and Hadith.
+            </p>
+            
+            <div class="scholar-categories">
+                <div class="scholar-category-card" onclick="filterScholars('tafsir')">
+                    <div class="scholar-category-icon">📖</div>
+                    <h3>Tafsir Experts</h3>
+                    <p>Specialists in Qur'anic exegesis and interpretation</p>
+                    <span class="scholar-count">89 scholars</span>
+                </div>
+                
+                <div class="scholar-category-card" onclick="filterScholars('hadith')">
+                    <div class="scholar-category-icon">📜</div>
+                    <h3>Hadith Scholars</h3>
+                    <p>Experts in prophetic traditions and narrations</p>
+                    <span class="scholar-count">76 scholars</span>
+                </div>
+                
+                <div class="scholar-category-card" onclick="filterScholars('fiqh')">
+                    <div class="scholar-category-icon">⚖️</div>
+                    <h3>Fiqh Specialists</h3>
+                    <p>Islamic jurisprudence and legal experts</p>
+                    <span class="scholar-count">94 scholars</span>
+                </div>
+                
+                <div class="scholar-category-card" onclick="filterScholars('arabic')">
+                    <div class="scholar-category-icon">🔤</div>
+                    <h3>Arabic Language</h3>
+                    <p>Classical Arabic and Qur'anic linguistics</p>
+                    <span class="scholar-count">67 scholars</span>
+                </div>
+                
+                <div class="scholar-category-card" onclick="filterScholars('tajweed')">
+                    <div class="scholar-category-icon">🎧</div>
+                    <h3>Tajweed & Recitation</h3>
+                    <p>Experts in proper Qur'anic pronunciation</p>
+                    <span class="scholar-count">82 scholars</span>
+                </div>
+                
+                <div class="scholar-category-card" onclick="filterScholars('aqeedah')">
+                    <div class="scholar-category-icon">🕌</div>
+                    <h3>Aqeedah & Theology</h3>
+                    <p>Islamic creed and belief specialists</p>
+                    <span class="scholar-count">71 scholars</span>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Scholar Directory Section -->
+    <section class="scholar-directory" id="scholar-directory">
+        <div class="container">
+            <h2 class="section-title">Featured Scholars</h2>
+            
+            <div class="scholar-filters">
+                <button class="filter-button active" onclick="filterScholars('all')">All Scholars</button>
+                <button class="filter-button" onclick="filterScholars('available')">Available Now</button>
+                <button class="filter-button" onclick="filterScholars('top-rated')">Top Rated</button>
+                <button class="filter-button" onclick="filterScholars('new')">New Scholars</button>
+            </div>
+            
+            <div class="scholars-grid" id="scholarsGrid">
+                <!-- Scholar cards will be populated by JavaScript -->
+            </div>
+        </div>
+    </section>
+    
+    <!-- Why Choose AiQuran Section -->
+    <section class="why-choose" id="why-choose">
+        <div class="container">
+            <h2 class="section-title">Why Choose AiQuran?</h2>
+            <div class="why-choose-grid">
+                <div class="why-choose-card">
+                    <div class="why-choose-icon">🧠</div>
+                    <h3>AI-Powered Intelligence</h3>
+                    <p>Advanced GPT-4 technology with custom-trained models for accurate, context-aware Qur'anic guidance.</p>
+                </div>
+                <div class="why-choose-card">
+                    <div class="why-choose-icon">👥</div>
+                    <h3>Scholar Verification</h3>
+                    <p>All content is verified by Islamic scholars to ensure accuracy and alignment with traditional Islamic scholarship.</p>
+                </div>
+                <div class="why-choose-card">
+                    <div class="why-choose-icon">🔄</div>
+                    <h3>AI + Human Expertise</h3>
+                    <p>Perfect harmony between AI assistance and human expertise for comprehensive understanding.</p>
+                </div>
+                <div class="why-choose-card">
+                    <div class="why-choose-icon">🌐</div>
+                    <h3>Multilingual Access</h3>
+                    <p>Available in Arabic, English, Urdu, and 10+ other languages to serve Muslims worldwide.</p>
+                </div>
+                <div class="why-choose-card">
+                    <div class="why-choose-icon">📱</div>
+                    <h3>24/7 Availability</h3>
+                    <p>Your Qur'an companion is always available to provide support and guidance whenever you need it.</p>
+                </div>
+                <div class="why-choose-card">
+                    <div class="why-choose-icon">🎯</div>
+                    <h3>Personalized Learning</h3>
+                    <p>Tailored study plans and recommendations based on your unique learning goals and preferences.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Testimonials Section -->
+    <section class="testimonials" id="testimonials">
+        <div class="container">
+            <h2 class="section-title">Success Stories</h2>
+            <div class="testimonials-grid">
+                <div class="testimonial-card">
+                    <div class="testimonial-content">
+                        "AiQuran has transformed my daily Qur'an study. The AI provides instant answers to my questions, and I can verify them with real scholars when needed. It's like having a personal teacher available 24/7."
+                    </div>
+                    <div class="testimonial-author">
+                        <img src="https://picsum.photos/seed/user1/50/50.jpg" alt="User" class="testimonial-avatar">
+                        <div class="testimonial-info">
+                            <h4>Ahmed Hassan</h4>
+                            <p>Student, Egypt</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="testimonial-card">
+                    <div class="testimonial-content">
+                        "As a revert to Islam, AiQuran has been invaluable in my learning journey. The multilingual support and tafsir comparisons have helped me understand the Qur'an in ways I never thought possible."
+                    </div>
+                    <div class="testimonial-author">
+                        <img src="https://picsum.photos/seed/user2/50/50.jpg" alt="User" class="testimonial-avatar">
+                        <div class="testimonial-info">
+                            <h4>Sarah Johnson</h4>
+                            <p>Professional, USA</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="testimonial-card">
+                    <div class="testimonial-content">
+                        "The memorization tools have helped my children improve their Hifz tremendously. The Tajweed guidance and progress tracking make learning engaging and effective."
+                    </div>
+                    <div class="testimonial-author">
+                        <img src="https://picsum.photos/seed/user3/50/50.jpg" alt="User" class="testimonial-avatar">
+                        <div class="testimonial-info">
+                            <h4>Fatima Rahman</h4>
+                            <p>Parent, Malaysia</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Pricing Section -->
+    <section class="pricing" id="pricing">
+        <div class="container">
+            <h2 class="section-title">Choose Your Plan</h2>
+            <div class="pricing-grid">
+                <div class="pricing-card">
+                    <h3>Free</h3>
+                    <div class="price">£0<span style="font-size: 1rem;">/month</span></div>
+                    <div class="price-subtitle">Perfect for getting started</div>
+                    <ul class="pricing-features">
+                        <li>Basic AI Q&A (10/day)</li>
+                        <li>Limited Tafsir access</li>
+                        <li>Basic search functionality</li>
+                        <li>Community support</li>
+                        <li>Mobile app access</li>
+                    </ul>
+                    <button class="cta-button" onclick="openModal('signupModal')" style="width: 100%;">Get Started Free</button>
+                </div>
+                <div class="pricing-card featured">
+                    <h3>Premium</h3>
+                    <div class="price">£4.99<span style="font-size: 1rem;">/month</span></div>
+                    <div class="price-subtitle">Most popular choice</div>
+                    <ul class="pricing-features">
+                        <li>Everything in Free</li>
+                        <li>Unlimited AI conversations</li>
+                        <li>Full Tafsir library access</li>
+                        <li>Advanced semantic search</li>
+                        <li>2 scholar consultations/month</li>
+                        <li>Memorization tools</li>
+                        <li>Personalized study plans</li>
+                    </ul>
+                    <button class="btn-primary" onclick="openModal('signupModal')" style="width: 100%;">Start Premium Trial</button>
+                </div>
+                <div class="pricing-card">
+                    <h3>Annual</h3>
+                    <div class="price">£49<span style="font-size: 1rem;">/year</span></div>
+                    <div class="price-subtitle">Save 18% with annual billing</div>
+                    <ul class="pricing-features">
+                        <li>Everything in Premium</li>
+                        <li>5 scholar consultations/month</li>
+                        <li>Priority support</li>
+                        <li>Early access to new features</li>
+                        <li>Exclusive content</li>
+                    </ul>
+                    <button class="cta-button" onclick="openModal('signupModal')" style="width: 100%;">Choose Annual</button>
+                </div>
+                <div class="pricing-card">
+                    <h3>Institutional</h3>
+                    <div class="price">Custom</div>
+                    <div class="price-subtitle">For schools & organizations</div>
+                    <ul class="pricing-features">
+                        <li>Everything in Annual</li>
+                        <li>Unlimited scholar access</li>
+                        <li>Multiple user accounts</li>
+                        <li>Custom learning modules</li>
+                        <li>Administrative dashboard</li>
+                        <li>Dedicated support</li>
+                    </ul>
+                    <button class="cta-button" onclick="openModal('contactModal')" style="width: 100%;">Contact Sales</button>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Dashboard Section -->
+    <section class="dashboard" id="dashboard">
+        <div class="container">
+            <div class="dashboard-header">
+                <h2>Your Qur'an Journey Dashboard</h2>
+                <div class="user-info">
+                    <img src="https://picsum.photos/seed/user/50/50.jpg" alt="User" style="width: 50px; height: 50px; border-radius: 50%;">
+                    <div>
+                        <div style="font-weight: 600;">Welcome back!</div>
+                        <div style="color: var(--primary-green); font-size: 0.9rem;">Premium Member</div>
+                    </div>
+                </div>
+            </div>
+            <div class="dashboard-tabs">
+                <button class="dashboard-tab active" onclick="switchDashboardTab('overview')">Overview</button>
+                <button class="dashboard-tab" onclick="switchDashboardTab('memorization')">Memorization</button>
+                <button class="dashboard-tab" onclick="switchDashboardTab('study')">Study Plan</button>
+                <button class="dashboard-tab" onclick="switchDashboardTab('progress')">Progress</button>
+                <button class="dashboard-tab" onclick="switchDashboardTab('scholars')">My Scholars</button>
+            </div>
+            <div class="dashboard-content">
+                <div class="dashboard-grid">
+                    <div class="dashboard-widget">
+                        <div class="widget-header">
+                            <div class="widget-title">Daily Progress</div>
+                            <div class="widget-icon">📊</div>
+                        </div>
+                        <div class="progress-tracker">
+                            <div class="progress-steps">
+                                <div class="progress-step">
+                                    <div class="step-circle completed">✓</div>
+                                    <div class="step-label">Fajr Recitation</div>
+                                </div>
+                                <div class="progress-step">
+                                    <div class="step-circle completed">✓</div>
+                                    <div class="step-label">Morning Study</div>
+                                </div>
+                                <div class="progress-step">
+                                    <div class="step-circle active">3</div>
+                                    <div class="step-label">New Verses</div>
+                                </div>
+                                <div class="progress-step">
+                                    <div class="step-circle">4</div>
+                                    <div class="step-label">Review</div>
+                                </div>
+                            </div>
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: 60%;"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="dashboard-widget">
+                        <div class="widget-header">
+                            <div class="widget-title">Memorization Progress</div>
+                            <div class="widget-icon">📖</div>
+                        </div>
+                        <div style="text-align: center; padding: 1rem;">
+                            <div style="font-size: 3rem; font-weight: 800; background: linear-gradient(135deg, var(--primary-green) 0%, var(--secondary-blue) 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">15</div>
+                            <div style="color: var(--text-dim);">Juz completed</div>
+                        </div>
+                    </div>
+                    <div class="dashboard-widget">
+                        <div class="widget-header">
+                            <div class="widget-title">Study Goals</div>
+                            <div class="widget-icon">🎯</div>
+                        </div>
+                        <ul style="list-style: none;">
+                            <li style="padding: 0.5rem 0; border-bottom: 1px solid rgba(255, 255, 255, 0.1);">✓ Complete Surah Al-Baqarah tafsir</li>
+                            <li style="padding: 0.5rem 0; border-bottom: 1px solid rgba(255, 255, 255, 0.1);">✓ Memorize 3 new verses daily</li>
+                            <li style="padding: 0.5rem 0;">○ Study Prophetic stories</li>
+                        </ul>
+                    </div>
+                    <div class="dashboard-widget">
+                        <div class="widget-header">
+                            <div class="widget-title">Scholar Consultations</div>
+                            <div class="widget-icon">👥</div>
+                        </div>
+                        <div style="text-align: center; padding: 1rem;">
+                            <div style="font-size: 2rem; margin: 1rem 0;">1/2</div>
+                            <div style="color: var(--text-dim);">Used this month</div>
+                            <button class="btn-primary" style="margin-top: 1rem; padding: 0.5rem 1rem; font-size: 0.9rem;" onclick="scrollToSection('scholars')">Book Scholar</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>AiQuran</h3>
+                    <p>The world's most intelligent Qur'anic learning assistant, combining AI technology with verified Islamic scholarship.</p>
+                </div>
+                <div class="footer-section">
+                    <h3>Features</h3>
+                    <ul>
+                        <li><a href="#">AI Q&A Assistant</a></li>
+                        <li><a href="#">Tafsir Explorer</a></li>
+                        <li><a href="#">Hadith Explorer</a></li>
+                        <li><a href="#">Memorization Tools</a></li>
+                        <li><a href="#">Study Plans</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h3>Resources</h3>
+                    <ul>
+                        <li><a href="#">Qur'an Library</a></li>
+                        <li><a href="#">Hadith Collections</a></li>
+                        <li><a href="#">Scholar Network</a></li>
+                        <li><a href="#">Learning Paths</a></li>
+                        <li><a href="#">Help Center</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h3>Company</h3>
+                    <ul>
+                        <li><a href="#">About Us</a></li>
+                        <li><a href="#">Careers</a></li>
+                        <li><a href="#">Partnerships</a></li>
+                        <li><a href="#">Contact</a></li>
+                        <li><a href="#">Become a Scholar</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2025 AiQuran. All rights reserved. | Designed with ❤️ for the global Muslim community</p>
+            </div>
+        </div>
+    </footer>
+    
+    <!-- Chat Interface -->
+    <div class="chat-interface" id="chatInterface">
+        <div class="chat-header">
+            <div>
+                <h3>AiQuran Assistant</h3>
+                <div style="font-size: 0.9rem; opacity: 0.8;">Powered by AI & Islamic Scholarship</div>
+            </div>
+            <button onclick="toggleChat()" style="background: none; border: none; color: white; font-size: 1.5rem; cursor: pointer;">×</button>
+        </div>
+        <div class="chat-messages" id="chatMessages">
+            <div class="message ai">
+                📖 Peace be upon you! I'm AiQuran, your AI-powered Qur'an assistant. Ask me anything about the Qur'an, and I'll provide answers with tafsir explanations. How can I support your learning journey today?
+            </div>
+        </div>
+        <div class="chat-input">
+            <input type="text" id="messageInput" placeholder="Ask about the Qur'an..." onkeypress="handleChatKeyPress(event)">
+            <button onclick="sendMessage()">📤</button>
+        </div>
+    </div>
+    <button class="chat-toggle" onclick="toggleChat()" id="chatToggle">💬</button>
+    
+    <!-- Modals -->
+    <div class="modal" id="loginModal">
+        <div class="modal-content">
+            <button class="modal-close" onclick="closeModal('loginModal')">×</button>
+            <h2>Welcome Back</h2>
+            <p>Login to access your AiQuran dashboard</p>
+            <form onsubmit="handleLogin(event)">
+                <div class="form-group">
+                    <label>Email Address</label>
+                    <input type="email" required>
+                </div>
+                <div class="form-group">
+                    <label>Password</label>
+                    <input type="password" required>
+                </div>
+                <button type="submit" class="cta-button" style="width: 100%;">Login</button>
+            </form>
+        </div>
+    </div>
+    
+    <div class="modal" id="signupModal">
+        <div class="modal-content">
+            <button class="modal-close" onclick="closeModal('signupModal')">×</button>
+            <h2>Join AiQuran</h2>
+            <p>Start your transformative Qur'an learning journey</p>
+            <form onsubmit="handleSignup(event)">
+                <div class="form-group">
+                    <label>Full Name</label>
+                    <input type="text" required>
+                </div>
+                <div class="form-group">
+                    <label>Email Address</label>
+                    <input type="email" required>
+                </div>
+                <div class="form-group">
+                    <label>Password</label>
+                    <input type="password" required>
+                </div>
+                <div class="form-group">
+                    <label>Preferred Language</label>
+                    <select required>
+                        <option value="">Select language</option>
+                        <option value="ar">Arabic</option>
+                        <option value="en">English</option>
+                        <option value="ur">Urdu</option>
+                        <option value="fr">French</option>
+                        <option value="id">Bahasa Indonesia</option>
+                        <option value="other">Other</option>
+                    </select>
+                </div>
+                <button type="submit" class="cta-button" style="width: 100%;">Create Account</button>
+            </form>
+        </div>
+    </div>
+    
+    <div class="modal" id="contactModal">
+        <div class="modal-content">
+            <button class="modal-close" onclick="closeModal('contactModal')">×</button>
+            <h2>Institutional Inquiry</h2>
+            <p>Interested in AiQuran for your school, mosque, or organization? Let us know how we can help.</p>
+            <form onsubmit="handleContact(event)">
+                <div class="form-group">
+                    <label>Full Name</label>
+                    <input type="text" required>
+                </div>
+                <div class="form-group">
+                    <label>Email Address</label>
+                    <input type="email" required>
+                </div>
+                <div class="form-group">
+                    <label>Organization</label>
+                    <input type="text" required>
+                </div>
+                <div class="form-group">
+                    <label>Number of Users</label>
+                    <select required>
+                        <option value="">Select range</option>
+                        <option value="1-10">1-10 users</option>
+                        <option value="11-50">11-50 users</option>
+                        <option value="51-200">51-200 users</option>
+                        <option value="200+">200+ users</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Message</label>
+                    <textarea rows="4" required></textarea>
+                </div>
+                <button type="submit" class="cta-button" style="width: 100%;">Send Message</button>
+            </form>
+        </div>
+    </div>
+    
+    <!-- Notification -->
+    <div class="notification" id="notification">
+        <div class="notification-header">
+            <div class="notification-title">Notification</div>
+            <button class="notification-close" onclick="hideNotification()">×</button>
+        </div>
+        <div class="notification-message" id="notificationMessage">
+            Welcome to AiQuran!
+        </div>
+    </div>
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script>
+        // Global variables
+        let currentDashboardTab = 'overview';
+        let chatHistory = [];
+        let heroChatHistory = [];
+        let hadithChatHistory = [];
+        let currentBookingTab = 'instant';
+        let selectedScholar = null;
+        let selectedTimeSlot = null;
+        
+        // Scholar data - populated with renowned Islamic scholars
+        const scholars = [
+            {
+                id: 1,
+                name: "Dr. Yusuf Al-Qaradawi",
+                specialty: "Islamic Jurisprudence",
+                category: "fiqh",
+                rating: 4.9,
+                reviews: 1245,
+                status: "online",
+                price: 50,
+                bio: "Prominent Islamic scholar and author known for his expertise in Islamic jurisprudence and contemporary issues. Founder of the International Union of Muslim Scholars.",
+                skills: ["Islamic Jurisprudence", "Contemporary Fiqh", "Qur'anic Sciences", "Islamic Economics"],
+                avatar: "https://picsum.photos/seed/qaradawi/80/80.jpg"
+            },
+            {
+                id: 2,
+                name: "Sheikh Muhammad Al-Yaqoubi",
+                specialty: "Islamic Spirituality",
+                category: "aqeedah",
+                rating: 4.8,
+                reviews: 987,
+                status: "online",
+                price: 45,
+                bio: "Renowned spiritual leader and teacher from Syria, known for his deep knowledge of Islamic spirituality, theology, and prophetic traditions.",
+                skills: ["Islamic Spirituality", "Tasawwuf", "Prophetic Biography", "Islamic Theology"],
+                avatar: "https://picsum.photos/seed/yaqoubi/80/80.jpg"
+            },
+            {
+                id: 3,
+                name: "Dr. Abdullah bin Bayyah",
+                specialty: "Islamic Law",
+                category: "fiqh",
+                rating: 4.9,
+                reviews: 1123,
+                status: "busy",
+                price: 55,
+                bio: "Mauritanian Islamic scholar and expert in Islamic jurisprudence, known for his moderate approach and expertise in contemporary legal issues.",
+                skills: ["Islamic Law", "Maqasid al-Shariah", "Contemporary Issues", "Interfaith Relations"],
+                avatar: "https://picsum.photos/seed/binbayyah/80/80.jpg"
+            },
+            {
+                id: 4,
+                name: "Sheikh Hamza Yusuf",
+                specialty: "Islamic Studies",
+                category: "tafsir",
+                rating: 4.9,
+                reviews: 1456,
+                status: "online",
+                price: 60,
+                bio: "American Islamic scholar and co-founder of Zaytuna College, known for his expertise in Qur'anic exegesis, Islamic theology, and contemporary Muslim issues.",
+                skills: ["Qur'anic Exegesis", "Islamic Theology", "Prophetic Biography", "Islamic History"],
+                avatar: "https://picsum.photos/seed/hamzayusuf/80/80.jpg"
+            },
+            {
+                id: 5,
+                name: "Dr. Omar Suleiman",
+                specialty: "Islamic Studies",
+                category: "hadith",
+                rating: 4.8,
+                reviews: 1324,
+                status: "online",
+                price: 40,
+                bio: "American Muslim scholar, speaker, and founder of the Yaqeen Institute for Islamic Research, known for his expertise in Hadith studies and Islamic theology.",
+                skills: ["Hadith Studies", "Islamic Theology", "Prophetic Biography", "Contemporary Issues"],
+                avatar: "https://picsum.photos/seed/omarsuleiman/80/80.jpg"
+            },
+            {
+                id: 6,
+                name: "Sheikh Yasir Qadhi",
+                specialty: "Islamic Studies",
+                category: "tafsir",
+                rating: 4.7,
+                reviews: 1567,
+                status: "offline",
+                price: 45,
+                bio: "American Muslim scholar and Dean of Academic Affairs at AlMaghrib Institute, known for his expertise in Qur'anic sciences, Hadith, and Islamic history.",
+                skills: ["Qur'anic Sciences", "Hadith Studies", "Islamic History", "Theology"],
+                avatar: "https://picsum.photos/seed/yasirqadhi/80/80.jpg"
+            },
+            {
+                id: 7,
+                name: "Dr. Ingrid Mattson",
+                specialty: "Islamic Studies",
+                category: "tafsir",
+                rating: 4.8,
+                reviews: 876,
+                status: "online",
+                price: 50,
+                bio: "Canadian Islamic scholar and former president of the Islamic Society of North America, known for her expertise in Qur'anic studies and Islamic spirituality.",
+                skills: ["Qur'anic Studies", "Islamic Spirituality", "Contemporary Issues", "Gender in Islam"],
+                avatar: "https://picsum.photos/seed/ingridmattson/80/80.jpg"
+            },
+            {
+                id: 8,
+                name: "Sheikh Abdal Hakim Murad",
+                specialty: "Islamic Theology",
+                category: "aqeedah",
+                rating: 4.9,
+                reviews: 1023,
+                status: "busy",
+                price: 55,
+                bio: "British Islamic scholar and translator known for his expertise in Islamic theology, Sufism, and interfaith dialogue.",
+                skills: ["Islamic Theology", "Sufism", "Interfaith Dialogue", "Islamic Philosophy"],
+                avatar: "https://picsum.photos/seed/abdalhakim/80/80.jpg"
+            },
+            {
+                id: 9,
+                name: "Dr. Amina Wadud",
+                specialty: "Qur'anic Studies",
+                category: "tafsir",
+                rating: 4.6,
+                reviews: 789,
+                status: "online",
+                price: 45,
+                bio: "American Islamic scholar known for her groundbreaking work on gender-inclusive Qur'anic exegesis and contemporary Islamic issues.",
+                skills: ["Qur'anic Exegesis", "Gender in Islam", "Contemporary Issues", "Islamic Ethics"],
+                avatar: "https://picsum.photos/seed/aminawadud/80/80.jpg"
+            },
+            {
+                id: 10,
+                name: "Sheikh Nuh Ha Mim Keller",
+                specialty: "Islamic Law",
+                category: "fiqh",
+                rating: 4.8,
+                reviews: 934,
+                status: "offline",
+                price: 50,
+                bio: "American Islamic scholar and translator known for his expertise in Islamic jurisprudence, Sufism, and traditional Islamic sciences.",
+                skills: ["Islamic Jurisprudence", "Sufism", "Traditional Sciences", "Islamic Spirituality"],
+                avatar: "https://picsum.photos/seed/nuhkeller/80/80.jpg"
+            },
+            {
+                id: 11,
+                name: "Dr. Jonathan Brown",
+                specialty: "Hadith Studies",
+                category: "hadith",
+                rating: 4.7,
+                reviews: 856,
+                status: "online",
+                price: 40,
+                bio: "American Islamic scholar and professor at Georgetown University, known for his expertise in Hadith studies, Islamic law, and contemporary Muslim issues.",
+                skills: ["Hadith Studies", "Islamic Law", "Contemporary Issues", "Islamic History"],
+                avatar: "https://picsum.photos/seed/jonathanbrown/80/80.jpg"
+            },
+            {
+                id: 12,
+                name: "Sheikh Habib Ali al-Jifri",
+                specialty: "Islamic Spirituality",
+                category: "aqeedah",
+                rating: 4.9,
+                reviews: 1123,
+                status: "online",
+                price: 45,
+                bio: "Yemeni Islamic scholar and spiritual leader known for his expertise in Islamic spirituality, theology, and prophetic traditions.",
+                skills: ["Islamic Spirituality", "Prophetic Traditions", "Islamic Theology", "Interfaith Dialogue"],
+                avatar: "https://picsum.photos/seed/habibalijifri/80/80.jpg"
+            }
+        ];
+        
+        // Three.js Background
+        let scene, camera, renderer, particles, particleSystem, connectionLines;
+        let mouseX = 0, mouseY = 0;
+        let windowHalfX = window.innerWidth / 2;
+        let windowHalfY = window.innerHeight / 2;
+        
+        function initThreeJS() {
+            // Create scene
+            scene = new THREE.Scene();
+            
+            // Create camera
+            camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 1, 10000);
+            camera.position.z = 1000;
+            
+            // Create renderer
+            renderer = new THREE.WebGLRenderer({ alpha: true });
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            renderer.setPixelRatio(window.devicePixelRatio);
+            document.getElementById('three-container').appendChild(renderer.domElement);
+            
+            // Create Islamic geometric pattern
+            const patternSize = 50;
+            const patternGeometry = new THREE.BufferGeometry();
+            const patternVertices = [];
+            const patternColors = [];
+            
+            // Create hexagonal pattern
+            for (let i = 0; i < 100; i++) {
+                const angle = (i / 100) * Math.PI * 2;
+                const radius = 300 + Math.random() * 400;
+                const height = (Math.random() - 0.5) * 600;
+                
+                // Central point
+                patternVertices.push(
+                    Math.cos(angle) * radius,
+                    height,
+                    Math.sin(angle) * radius
+                );
+                
+                // Hexagon points
+                for (let j = 0; j < 6; j++) {
+                    const hexAngle = angle + (j / 6) * Math.PI * 2;
+                    const hexRadius = 30;
+                    
+                    patternVertices.push(
+                        Math.cos(hexAngle) * hexRadius + Math.cos(angle) * radius,
+                        height + (Math.random() - 0.5) * 20,
+                        Math.sin(hexAngle) * hexRadius + Math.sin(angle) * radius
+                    );
+                }
+                
+                // Add colors
+                const colorOptions = [
+                    new THREE.Color(0x0a7e4e), // Primary green
+                    new THREE.Color(0x1a5fb4), // Secondary blue
+                    new THREE.Color(0xf5c211), // Accent gold
+                ];
+                
+                const color = colorOptions[Math.floor(Math.random() * colorOptions.length)];
+                for (let k = 0; k < 7; k++) {
+                    patternColors.push(color.r, color.g, color.b);
+                }
+            }
+            
+            patternGeometry.setAttribute('position', new THREE.Float32BufferAttribute(patternVertices, 3));
+            patternGeometry.setAttribute('color', new THREE.Float32BufferAttribute(patternColors, 3));
+            
+            const patternMaterial = new THREE.PointsMaterial({
+                size: 3,
+                vertexColors: true,
+                transparent: true,
+                opacity: 0.8,
+                sizeAttenuation: true,
+                blending: THREE.AdditiveBlending
+            });
+            
+            particleSystem = new THREE.Points(patternGeometry, patternMaterial);
+            scene.add(particleSystem);
+            
+            // Create connection lines between nearby points
+            const lineMaterial = new THREE.LineBasicMaterial({ 
+                color: 0x0a7e4e, 
+                opacity: 0.2, 
+                transparent: true 
+            });
+            
+            connectionLines = new THREE.Group();
+            
+            for (let i = 0; i < patternVertices.length; i += 7) {
+                for (let j = i + 7; j < patternVertices.length; j += 7) {
+                    const distance = Math.sqrt(
+                        Math.pow(patternVertices[i] - patternVertices[j], 2) +
+                        Math.pow(patternVertices[i + 1] - patternVertices[j + 1], 2) +
+                        Math.pow(patternVertices[i + 2] - patternVertices[j + 2], 2)
+                    );
+                    
+                    if (distance < 200) {
+                        const geometry = new THREE.BufferGeometry().setFromPoints([
+                            new THREE.Vector3(patternVertices[i], patternVertices[i + 1], patternVertices[i + 2]),
+                            new THREE.Vector3(patternVertices[j], patternVertices[j + 1], patternVertices[j + 2])
+                        ]);
+                        const line = new THREE.Line(geometry, lineMaterial);
+                        connectionLines.add(line);
+                    }
+                }
+            }
+            
+            scene.add(connectionLines);
+            
+            // Add lights
+            const ambientLight = new THREE.AmbientLight(0xffffff, 0.4);
+            scene.add(ambientLight);
+            
+            const directionalLight = new THREE.DirectionalLight(0xffffff, 0.6);
+            directionalLight.position.set(1, 1, 1);
+            scene.add(directionalLight);
+            
+            // Add event listeners
+            document.addEventListener('mousemove', onDocumentMouseMove);
+            window.addEventListener('resize', onWindowResize);
+            
+            // Start animation
+            animate();
+        }
+        
+        function onDocumentMouseMove(event) {
+            mouseX = event.clientX - windowHalfX;
+            mouseY = event.clientY - windowHalfY;
+        }
+        
+        function onWindowResize() {
+            windowHalfX = window.innerWidth / 2;
+            windowHalfY = window.innerHeight / 2;
+            
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        }
+        
+        function animate() {
+            requestAnimationFrame(animate);
+            
+            // Update camera position based on mouse
+            camera.position.x += (mouseX * 0.3 - camera.position.x) * 0.05;
+            camera.position.y += (-mouseY * 0.3 - camera.position.y) * 0.05;
+            camera.lookAt(scene.position);
+            
+            // Rotate particle system
+            if (particleSystem) {
+                particleSystem.rotation.x += 0.0005;
+                particleSystem.rotation.y += 0.001;
+            }
+            
+            // Rotate connection lines
+            if (connectionLines) {
+                connectionLines.rotation.x += 0.0003;
+                connectionLines.rotation.y += 0.0007;
+            }
+            
+            renderer.render(scene, camera);
+        }
+        
+        // Initialize the application
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialize Three.js background
+            initThreeJS();
+            
+            // Populate scholars grid
+            populateScholarsGrid();
+            
+            // Add smooth scrolling
+            document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+                anchor.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    const target = document.querySelector(this.getAttribute('href'));
+                    if (target) {
+                        target.scrollIntoView({
+                            behavior: 'smooth',
+                            block: 'start'
+                        });
+                    }
+                });
+            });
+            
+            // Show welcome notification
+            setTimeout(() => {
+                showNotification('Welcome to AiQuran!', 'Your AI-powered Qur\'an learning companion is ready to help you deepen your understanding of the Holy Qur\'an.');
+            }, 2000);
+        });
+        
+        // Scholar functions
+        function populateScholarsGrid(filter = 'all') {
+            const grid = document.getElementById('scholarsGrid');
+            grid.innerHTML = '';
+            
+            let filteredScholars = scholars;
+            
+            if (filter !== 'all') {
+                if (filter === 'available') {
+                    filteredScholars = scholars.filter(scholar => scholar.status === 'online');
+                } else if (filter === 'top-rated') {
+                    filteredScholars = scholars.filter(scholar => scholar.rating >= 4.8);
+                } else if (filter === 'new') {
+                    filteredScholars = scholars.slice(-6);
+                } else {
+                    filteredScholars = scholars.filter(scholar => scholar.category === filter);
+                }
+            }
+            
+            filteredScholars.forEach(scholar => {
+                const scholarCard = createScholarCard(scholar);
+                grid.appendChild(scholarCard);
+            });
+        }
+        
+        function createScholarCard(scholar) {
+            const card = document.createElement('div');
+            card.className = 'scholar-card';
+            
+            const statusClass = `status-${scholar.status}`;
+            const statusText = scholar.status.charAt(0).toUpperCase() + scholar.status.slice(1);
+            
+            card.innerHTML = `
+                <div class="scholar-header">
+                    <img src="${scholar.avatar}" alt="${scholar.name}" class="scholar-avatar">
+                    <div class="scholar-info">
+                        <h3>${scholar.name}</h3>
+                        <div class="scholar-specialty">${scholar.specialty}</div>
+                        <div class="scholar-rating">
+                            <div class="stars">${'★'.repeat(Math.floor(scholar.rating))}</div>
+                            <span>${scholar.rating} (${scholar.reviews} reviews)</span>
+                        </div>
+                        <div class="scholar-status ${statusClass}">
+                            <span style="width: 8px; height: 8px; background: currentColor; border-radius: 50%; display: inline-block; margin-right: 0.5rem;"></span>
+                            ${statusText}
+                        </div>
+                    </div>
+                </div>
+                <div class="scholar-bio">${scholar.bio}</div>
+                <div class="scholar-skills">
+                    ${scholar.skills.map(skill => `<span class="skill-tag">${skill}</span>`).join('')}
+                </div>
+                <div class="scholar-actions">
+                    <button class="btn-book" onclick="showNotification('Booking System', 'Scholar booking feature coming soon!')">Book Session</button>
+                    <button class="btn-profile" onclick="showNotification('Scholar Profile', 'Scholar profile feature coming soon!')">View Profile</button>
+                </div>
+                <div class="scholar-availability">
+                    <div class="availability-info">30-minute session</div>
+                    <div class="consultation-price">£${scholar.price}</div>
+                </div>
+            `;
+            
+            return card;
+        }
+        
+        function filterScholars(category) {
+            populateScholarsGrid(category);
+            
+            // Update filter buttons
+            document.querySelectorAll('.filter-button').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.classList.add('active');
+        }
+        
+        // Modal functions
+        function openModal(modalId) {
+            const modal = document.getElementById(modalId);
+            modal.classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+        
+        function closeModal(modalId) {
+            const modal = document.getElementById(modalId);
+            modal.classList.remove('active');
+            document.body.style.overflow = 'auto';
+        }
+        
+        // Close modals when clicking outside
+        window.addEventListener('click', function(event) {
+            if (event.target.classList.contains('modal')) {
+                event.target.classList.remove('active');
+                document.body.style.overflow = 'auto';
+            }
+        });
+        
+        // Form handlers
+        function handleLogin(event) {
+            event.preventDefault();
+            const submitBtn = event.target.querySelector('button[type="submit"]');
+            const originalText = submitBtn.textContent;
+            
+            submitBtn.innerHTML = '<div class="loading"></div> Logging in...';
+            submitBtn.disabled = true;
+            setTimeout(() => {
+                closeModal('loginModal');
+                showNotification('Login Successful!', 'Welcome back to your AiQuran dashboard.');
+                showDashboard();
+                submitBtn.textContent = originalText;
+                submitBtn.disabled = false;
+                event.target.reset();
+            }, 2000);
+        }
+        
+        function handleSignup(event) {
+            event.preventDefault();
+            const submitBtn = event.target.querySelector('button[type="submit"]');
+            const originalText = submitBtn.textContent;
+            
+            submitBtn.innerHTML = '<div class="loading"></div> Creating account...';
+            submitBtn.disabled = true;
+            setTimeout(() => {
+                closeModal('signupModal');
+                showNotification('Account Created!', 'Welcome to AiQuran! Start your transformative Qur\'an learning journey.');
+                showDashboard();
+                submitBtn.textContent = originalText;
+                submitBtn.disabled = false;
+                event.target.reset();
+            }, 2000);
+        }
+        
+        function handleContact(event) {
+            event.preventDefault();
+            const submitBtn = event.target.querySelector('button[type="submit"]');
+            const originalText = submitBtn.textContent;
+            
+            submitBtn.innerHTML = '<div class="loading"></div> Sending...';
+            submitBtn.disabled = true;
+            setTimeout(() => {
+                closeModal('contactModal');
+                showNotification('Message Sent!', 'Our team will contact you within 24 hours to discuss your institutional needs.');
+                submitBtn.textContent = originalText;
+                submitBtn.disabled = false;
+                event.target.reset();
+            }, 2000);
+        }
+        
+        // Dashboard functions
+        function showDashboard() {
+            const dashboard = document.getElementById('dashboard');
+            dashboard.classList.add('active');
+            dashboard.scrollIntoView({ behavior: 'smooth' });
+        }
+        
+        function switchDashboardTab(tabName) {
+            // Update tab buttons
+            document.querySelectorAll('.dashboard-tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            event.target.classList.add('active');
+            
+            // Update content based on tab
+            const content = document.querySelector('.dashboard-content');
+            
+            // Simulate different content for different tabs
+            const tabContents = {
+                overview: `
+                    <div class="dashboard-grid">
+                        <div class="dashboard-widget">
+                            <div class="widget-header">
+                                <div class="widget-title">Daily Progress</div>
+                                <div class="widget-icon">📊</div>
+                            </div>
+                            <div class="progress-tracker">
+                                <div class="progress-steps">
+                                    <div class="progress-step">
+                                        <div class="step-circle completed">✓</div>
+                                        <div class="step-label">Fajr Recitation</div>
+                                    </div>
+                                    <div class="progress-step">
+                                        <div class="step-circle completed">✓</div>
+                                        <div class="step-label">Morning Study</div>
+                                    </div>
+                                    <div class="progress-step">
+                                        <div class="step-circle active">3</div>
+                                        <div class="step-label">New Verses</div>
+                                    </div>
+                                    <div class="progress-step">
+                                        <div class="step-circle">4</div>
+                                        <div class="step-label">Review</div>
+                                    </div>
+                                </div>
+                                <div class="progress-bar">
+                                    <div class="progress-fill" style="width: 60%;"></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="dashboard-widget">
+                            <div class="widget-header">
+                                <div class="widget-title">Memorization Progress</div>
+                                <div class="widget-icon">📖</div>
+                            </div>
+                            <div style="text-align: center; padding: 1rem;">
+                                <div style="font-size: 3rem; font-weight: 800; background: linear-gradient(135deg, var(--primary-green) 0%, var(--secondary-blue) 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">15</div>
+                                <div style="color: var(--text-dim);">Juz completed</div>
+                            </div>
+                        </div>
+                        <div class="dashboard-widget">
+                            <div class="widget-header">
+                                <div class="widget-title">Study Goals</div>
+                                <div class="widget-icon">🎯</div>
+                            </div>
+                            <ul style="list-style: none;">
+                                <li style="padding: 0.5rem 0; border-bottom: 1px solid rgba(255, 255, 255, 0.1);">✓ Complete Surah Al-Baqarah tafsir</li>
+                                <li style="padding: 0.5rem 0; border-bottom: 1px solid rgba(255, 255, 255, 0.1);">✓ Memorize 3 new verses daily</li>
+                                <li style="padding: 0.5rem 0;">○ Study Prophetic stories</li>
+                            </ul>
+                        </div>
+                        <div class="dashboard-widget">
+                            <div class="widget-header">
+                                <div class="widget-title">Scholar Consultations</div>
+                                <div class="widget-icon">👥</div>
+                            </div>
+                            <div style="text-align: center; padding: 1rem;">
+                                <div style="font-size: 2rem; margin: 1rem 0;">1/2</div>
+                                <div style="color: var(--text-dim);">Used this month</div>
+                                <button class="btn-primary" style="margin-top: 1rem; padding: 0.5rem 1rem; font-size: 0.9rem;" onclick="scrollToSection('scholars')">Book Scholar</button>
+                            </div>
+                        </div>
+                    </div>
+                `,
+                memorization: `
+                    <div class="dashboard-grid">
+                        <div class="dashboard-widget">
+                            <div class="widget-header">
+                                <div class="widget-title">Memorization Stats</div>
+                                <div class="widget-icon">📊</div>
+                            </div>
+                            <div style="text-align: center;">
+                                <div style="font-size: 2rem; margin: 1rem 0;">15/30</div>
+                                <div style="color: var(--text-dim);">Juz memorized</div>
+                            </div>
+                        </div>
+                        <div class="dashboard-widget">
+                            <div class="widget-header">
+                                <div class="widget-title">Current Surah</div>
+                                <div class="widget-icon">📖</div>
+                            </div>
+                            <div style="text-align: center;">
+                                <div style="font-size: 2rem; margin: 1rem 0;">Al-Kahf</div>
+                                <div style="color: var(--text-dim);">Verse 45/110</div>
+                            </div>
+                        </div>
+                        <div class="dashboard-widget">
+                            <div class="widget-header">
+                                <div class="widget-title">Review Schedule</div>
+                                <div class="widget-icon">🔄</div>
+                            </div>
+                            <ul style="list-style: none;">
+                                <li style="padding: 0.5rem 0; border-bottom: 1px solid rgba(255, 255, 255, 0.1);">Today: Surah Yasin</li>
+                                <li style="padding: 0.5rem 0; border-bottom: 1px solid rgba(255, 255, 255, 0.1);">Tomorrow: Surah Al-Mulk</li>
+                                <li style="padding: 0.5rem 0;">This Week: Juz 1-5</li>
+                            </ul>
+                        </div>
+                        <div class="dashboard-widget">
+                            <div class="widget-header">
+                                <div class="widget-title">Memorization Goals</div>
+                                <div class="widget-icon">🎯</div>
+                            </div>
+                            <div style="text-align: center;">
+                                <div style="font-size: 2rem; margin: 1rem 0;">3</div>
+                                <div style="color: var(--text-dim);">Verses per day</div>
+                            </div>
+                        </div>
+                    </div>
+                `,
+                study: `
+                    <div class="dashboard-grid">
+                        <div class="dashboard-widget">
+                            <div class="widget-header">
+                                <div class="widget-title">Current Study Plan</div>
+                                <div class="widget-icon">📚</div>
+                            </div>
+                            <ul style="list-style: none;">
+                                <li style="padding: 0.5rem 0; border-bottom: 1px solid rgba(255, 255, 255, 0.1);">✓ Tafsir of Surah Al-Fatihah</li>
+                                <li style="padding: 0.5rem 0; border-bottom: 1px solid rgba(255, 255, 255, 0.1);">○ Tafsir of Surah Al-Baqarah</li>
+                                <li style="padding: 0.5rem 0; border-bottom: 1px solid rgba(255, 255, 255, 0.1);">○ Stories of the Prophets</li>
+                                <li style="padding: 0.5rem 0;">○ Islamic Morals & Ethics</li>
+                            </ul>
+                        </div>
+                        <div class="dashboard-widget">
+                            <div class="widget-header">
+                                <div class="widget-title">Study Progress</div>
+                                <div class="widget-icon">📊</div>
+                            </div>
+                            <div style="text-align: center;">
+                                <div style="font-size: 2rem; margin: 1rem 0;">65%</div>
+                                <div style="color: var(--text-dim);">Of current plan completed</div>
+                            </div>
+                        </div>
+                        <div class="dashboard-widget">
+                            <div class="widget-header">
+                                <div class="widget-title">Study Time</div>
+                                <div class="widget-icon">⏱️</div>
+                            </div>
+                            <div style="text-align: center;">
+                                <div style="font-size: 2rem; margin: 1rem 0;">45m</div>
+                                <div style="color: var(--text-dim);">Daily average</div>
+                            </div>
+                        </div>
+                        <div class="dashboard-widget">
+                            <div class="widget-header">
+                                <div class="widget-title">Recommended Next</div>
+                                <div class="widget-icon">➡️</div>
+                            </div>
+                            <ul style="list-style: none;">
+                                <li style="padding: 0.5rem 0; border-bottom: 1px solid rgba(255, 255, 255, 0.1);">Tafsir of Verses 255-257</li>
+                                <li style="padding: 0.5rem 0; border-bottom: 1px solid rgba(255, 255, 255, 0.1);">Story of Prophet Musa</li>
+                                <li style="padding: 0.5rem 0;">Lessons from Ayat al-Kursi</li>
+                            </ul>
+                        </div>
+                    </div>
+                `,
+                progress: `
+                    <div class="dashboard-grid">
+                        <div class="dashboard-widget">
+                            <div class="widget-header">
+                                <div class="widget-title">Overall Progress</div>
+                                <div class="widget-icon">📈</div>
+                            </div>
+                            <div style="text-align: center;">
+                                <div style="font-size: 2rem; margin: 1rem 0;">42%</div>
+                                <div style="color: var(--text-dim);">Of Qur'an studied</div>
+                            </div>
+                        </div>
+                        <div class="dashboard-widget">
+                            <div class="widget-header">
+                                <div class="widget-title">Consistency</div>
+                                <div class="widget-icon">🔥</div>
+                            </div>
+                            <div style="text-align: center;">
+                                <div style="font-size: 2rem; margin: 1rem 0;">28</div>
+                                <div style="color: var(--text-dim);">Day streak</div>
+                            </div>
+                        </div>
+                        <div class="dashboard-widget">
+                            <div class="widget-header">
+                                <div class="widget-title">Achievements</div>
+                                <div class="widget-icon">🏆</div>
+                            </div>
+                            <ul style="list-style: none;">
+                                <li style="padding: 0.5rem 0; border-bottom: 1px solid rgba(255, 255, 255, 0.1);">✓ Completed Juz 1</li>
+                                <li style="padding: 0.5rem 0; border-bottom: 1px solid rgba(255, 255, 255, 0.1);">✓ 7-day streak</li>
+                                <li style="padding: 0.5rem 0; border-bottom: 1px solid rgba(255, 255, 255, 0.1);">✓ 100 questions asked</li>
+                                <li style="padding: 0.5rem 0;">○ 30-day streak (2 days left)</li>
+                            </ul>
+                        </div>
+                        <div class="dashboard-widget">
+                            <div class="widget-header">
+                                <div class="widget-title">Weekly Summary</div>
+                                <div class="widget-icon">📆</div>
+                            </div>
+                            <ul style="list-style: none;">
+                                <li style="padding: 0.5rem 0; border-bottom: 1px solid rgba(255, 255, 255, 0.1);">Verses memorized: 21</li>
+                                <li style="padding: 0.5rem 0; border-bottom: 1px solid rgba(255, 255, 255, 0.1);">Study time: 5h 15m</li>
+                                <li style="padding: 0.5rem 0; border-bottom: 1px solid rgba(255, 255, 255, 0.1);">Questions asked: 14</li>
+                                <li style="padding: 0.5rem 0;">Scholar sessions: 1</li>
+                            </ul>
+                        </div>
+                    </div>
+                `,
+                scholars: `
+                    <div class="dashboard-grid">
+                        <div class="dashboard-widget">
+                            <div class="widget-header">
+                                <div class="widget-title">My Scholar Sessions</div>
+                                <div class="widget-icon">👥</div>
+                            </div>
+                            <ul style="list-style: none;">
+                                <li style="padding: 0.5rem 0; border-bottom: 1px solid rgba(255, 255, 255, 0.1);">
+                                    <div style="font-weight: 600;">Dr. Yusuf Al-Qaradawi</div>
+                                    <div style="font-size: 0.9rem; color: var(--text-dim);">Fiqh Consultation - Tomorrow 3:00 PM</div>
+                                </li>
+                                <li style="padding: 0.5rem 0; border-bottom: 1px solid rgba(255, 255, 255, 0.1);">
+                                    <div style="font-weight: 600;">Sheikh Hamza Yusuf</div>
+                                    <div style="font-size: 0.9rem; color: var(--text-dim);">Tafsir Session - Friday 2:00 PM</div>
+                                </li>
+                                <li style="padding: 0.5rem 0;">
+                                    <div style="font-weight: 600;">Dr. Omar Suleiman</div>
+                                    <div style="font-size: 0.9rem; color: var(--text-dim);">Hadith Consultation - Next Week</div>
+                                </li>
+                            </ul>
+                        </div>
+                        <div class="dashboard-widget">
+                            <div class="widget-header">
+                                <div class="widget-title">Session History</div>
+                                <div class="widget-icon">📚</div>
+                            </div>
+                            <ul style="list-style: none;">
+                                <li style="padding: 0.5rem 0; border-bottom: 1px solid rgba(255, 255, 255, 0.1);">
+                                    <div style="font-weight: 600;">Sheikh Muhammad Al-Yaqoubi</div>
+                                    <div style="font-size: 0.9rem; color: var(--text-dim);">Spiritual Guidance - Completed</div>
+                                </li>
+                                <li style="padding: 0.5rem 0; border-bottom: 1px solid rgba(255, 255, 255, 0.1);">
+                                    <div style="font-weight: 600;">Dr. Abdullah bin Bayyah</div>
+                                    <div style="font-size: 0.9rem; color: var(--text-dim);">Islamic Law - Completed</div>
+                                </li>
+                                <li style="padding: 0.5rem 0;">
+                                    <div style="font-weight: 600;">Dr. Ingrid Mattson</div>
+                                    <div style="font-size: 0.9rem; color: var(--text-dim);">Qur'anic Studies - Completed</div>
+                                </li>
+                            </ul>
+                        </div>
+                        <div class="dashboard-widget">
+                            <div class="widget-header">
+                                <div class="widget-title">Available Sessions</div>
+                                <div class="widget-icon">🎟️</div>
+                            </div>
+                            <div style="text-align: center; padding: 1rem;">
+                                <div style="font-size: 2rem; margin: 1rem 0;">1</div>
+                                <div style="color: var(--text-dim);">Remaining this month</div>
+                                <button class="btn-primary" style="margin-top: 1rem; padding: 0.5rem 1rem; font-size: 0.9rem;" onclick="scrollToSection('scholars')">Book More</button>
+                            </div>
+                        </div>
+                        <div class="dashboard-widget">
+                            <div class="widget-header">
+                                <div class="widget-title">Favorite Scholars</div>
+                                <div class="widget-icon">⭐</div>
+                            </div>
+                            <ul style="list-style: none;">
+                                <li style="padding: 0.5rem 0; border-bottom: 1px solid rgba(255, 255, 255, 0.1);">
+                                    <div style="font-weight: 600;">Dr. Yusuf Al-Qaradawi</div>
+                                    <div style="font-size: 0.9rem; color: var(--primary-green);">Islamic Jurisprudence</div>
+                                </li>
+                                <li style="padding: 0.5rem 0; border-bottom: 1px solid rgba(255, 255, 255, 0.1);">
+                                    <div style="font-weight: 600;">Sheikh Hamza Yusuf</div>
+                                    <div style="font-size: 0.9rem; color: var(--primary-green);">Islamic Studies</div>
+                                </li>
+                                <li style="padding: 0.5rem 0;">
+                                    <div style="font-weight: 600;">Dr. Omar Suleiman</div>
+                                    <div style="font-size: 0.9rem; color: var(--primary-green);">Islamic Studies</div>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                `
+            };
+            
+            content.innerHTML = tabContents[tabName] || tabContents.overview;
+            currentDashboardTab = tabName;
+        }
+        
+        // Chat functions
+        function toggleChat() {
+            const chatInterface = document.getElementById('chatInterface');
+            const chatToggle = document.getElementById('chatToggle');
+            
+            if (chatInterface.classList.contains('active')) {
+                chatInterface.classList.remove('active');
+                chatToggle.innerHTML = '💬';
+            } else {
+                chatInterface.classList.add('active');
+                chatToggle.innerHTML = '✕';
+            }
+        }
+        
+        function sendMessage() {
+            const input = document.getElementById('messageInput');
+            const message = input.value.trim();
+            
+            if (message) {
+                addChatMessage('user', message);
+                input.value = '';
+                
+                // Simulate AI response
+                setTimeout(() => {
+                    const aiResponse = generateAIResponse(message);
+                    addChatMessage('ai', aiResponse);
+                    
+                    // Randomly suggest scholar consultation (30% chance)
+                    if (Math.random() > 0.7) {
+                        setTimeout(() => {
+                            const scholarSuggestion = `Would you like me to connect you with a verified Islamic scholar for more personalized guidance on this topic? I can help you find someone who specializes in this area.`;
+                            addChatMessage('scholar-suggestion', scholarSuggestion);
+                        }, 2000);
+                    }
+                }, 1000);
+            }
+        }
+        
+        function addChatMessage(sender, message, isHeroChat = false, isHadithChat = false) {
+            let messagesDiv;
+            
+            if (isHeroChat) {
+                messagesDiv = document.getElementById('heroChatMessages');
+            } else if (isHadithChat) {
+                messagesDiv = document.getElementById('hadithChatMessages');
+            } else {
+                messagesDiv = document.getElementById('chatMessages');
+            }
+            
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${sender}`;
+            messageDiv.textContent = message;
+            messagesDiv.appendChild(messageDiv);
+            messagesDiv.scrollTop = messagesDiv.scrollHeight;
+            
+            if (isHeroChat) {
+                heroChatHistory.push({ sender, message, timestamp: new Date() });
+            } else if (isHadithChat) {
+                hadithChatHistory.push({ sender, message, timestamp: new Date() });
+            } else {
+                chatHistory.push({ sender, message, timestamp: new Date() });
+            }
+        }
+        
+        function generateAIResponse(userMessage) {
+            const responses = {
+                greeting: [
+                    "Peace be upon you! I'm AiQuran, your AI-powered Qur'an assistant. How can I help you understand the Holy Qur'an today?",
+                    "Welcome! I'm here to assist you with Qur'anic knowledge, tafsir explanations, and guidance. What would you like to explore?",
+                    "Greetings! I'm your personal Qur'an companion, ready to help you deepen your understanding of Allah's words. What questions do you have?"
+                ],
+                tafsir: [
+                    "I'd be happy to provide tafsir explanations for you! Which verse or Surah would you like to understand better?",
+                    "Great! Tafsir helps us understand the deeper meanings of the Qur'an. Let me know which verse you'd like explained.",
+                    "I'm here to help you explore the rich interpretations of the Qur'an. Which passage would you like to study today?"
+                ],
+                memorization: [
+                    "Memorizing the Qur'an is a blessed journey! I can help you with techniques, tracking, and Tajweed guidance. What would you like to work on?",
+                    "Hifz is a noble endeavor! I can provide memorization strategies, progress tracking, and recitation tips. How can I support your memorization goals?",
+                    "I'm here to assist you in your memorization journey! Whether you need help with new verses or review, I'm ready to help."
+                ],
+                search: [
+                    "I can help you find relevant verses on any topic using semantic search. What theme or concept would you like to explore in the Qur'an?",
+                    "The Qur'an contains guidance on all aspects of life. What topic would you like to search for?",
+                    "I can help you discover verses related to any theme or concept. What would you like to explore?"
+                ],
+                default: [
+                    "I'm here to help you with all aspects of Qur'anic learning - from understanding verses to memorization and connecting with scholars. What would you like to focus on?",
+                    "As your Qur'an companion, I'm equipped to assist with tafsir, memorization, search, and connecting you with Islamic scholars. What area would you like to explore?",
+                    "I'm your AI-powered Qur'an assistant! Whether it's understanding verses, memorization help, or scholar connections, I'm here to help."
+                ]
+            };
+            
+            const lowerMessage = userMessage.toLowerCase();
+            
+            if (lowerMessage.includes('hello') || lowerMessage.includes('hi') || lowerMessage.includes('assalam') || lowerMessage.includes('peace')) {
+                return responses.greeting[Math.floor(Math.random() * responses.greeting.length)];
+            } else if (lowerMessage.includes('tafsir') || lowerMessage.includes('interpretation') || lowerMessage.includes('meaning') || lowerMessage.includes('explain')) {
+                return responses.tafsir[Math.floor(Math.random() * responses.tafsir.length)];
+            } else if (lowerMessage.includes('memorization') || lowerMessage.includes('hifz') || lowerMessage.includes('memorize') || lowerMessage.includes('learn')) {
+                return responses.memorization[Math.floor(Math.random() * responses.memorization.length)];
+            } else if (lowerMessage.includes('search') || lowerMessage.includes('find') || lowerMessage.includes('verse') || lowerMessage.includes('topic')) {
+                return responses.search[Math.floor(Math.random() * responses.search.length)];
+            } else {
+                return responses.default[Math.floor(Math.random() * responses.default.length)];
+            }
+        }
+        
+        function generateHadithResponse(userMessage) {
+            const responses = {
+                greeting: [
+                    "Peace be upon you! I'm your Hadith search assistant. Ask me about any Hadith, topic, or saying of Prophet Muhammad (PBUH), and I'll provide authentic narrations with explanations.",
+                    "Welcome! I'm here to help you explore the rich tradition of Hadith. What would you like to learn about the sayings and actions of our beloved Prophet (PBUH)?",
+                    "Greetings! I'm your Hadith companion, ready to help you discover authentic narrations from the Prophet Muhammad (PBUH). What questions do you have?"
+                ],
+                search: [
+                    "I can help you find authentic Hadith on any topic using semantic search. What theme or concept would you like to explore in the Hadith collections?",
+                    "The Hadith contain guidance on all aspects of life. What topic would you like to search for?",
+                    "I can help you discover narrations related to any theme or concept. What would you like to explore?"
+                ],
+                explanation: [
+                    "I'd be happy to provide explanations and context for Hadith! Which narration or topic would you like to understand better?",
+                    "Great! Understanding the context and meaning of Hadith is essential for proper application. Let me know which Hadith you'd like explained.",
+                    "I'm here to help you explore the rich meanings and applications of Hadith. Which narration would you like to study today?"
+                ],
+                authenticity: [
+                    "I can help you understand the authenticity and grading of Hadith. Which narration would you like me to analyze?",
+                    "The science of Hadith verification is crucial for understanding our religion. Let me know which Hadith you'd like me to assess.",
+                    "I'm here to help you understand the chain of narration and authenticity of Hadith. Which narration would you like to learn about?"
+                ],
+                default: [
+                    "I'm here to help you with all aspects of Hadith studies - from finding narrations to understanding their authenticity and application. What would you like to focus on?",
+                    "As your Hadith companion, I'm equipped to assist with search, explanation, authenticity grading, and connecting you with scholars. What area would you like to explore?",
+                    "I'm your AI-powered Hadith assistant! Whether it's finding narrations, understanding context, or verifying authenticity, I'm here to help."
+                ]
+            };
+            
+            const lowerMessage = userMessage.toLowerCase();
+            
+            if (lowerMessage.includes('hello') || lowerMessage.includes('hi') || lowerMessage.includes('assalam') || lowerMessage.includes('peace')) {
+                return responses.greeting[Math.floor(Math.random() * responses.greeting.length)];
+            } else if (lowerMessage.includes('search') || lowerMessage.includes('find') || lowerMessage.includes('hadith') || lowerMessage.includes('narration')) {
+                return responses.search[Math.floor(Math.random() * responses.search.length)];
+            } else if (lowerMessage.includes('explain') || lowerMessage.includes('meaning') || lowerMessage.includes('understand') || lowerMessage.includes('context')) {
+                return responses.explanation[Math.floor(Math.random() * responses.explanation.length)];
+            } else if (lowerMessage.includes('authentic') || lowerMessage.includes('chain') || lowerMessage.includes('isnad') || lowerMessage.includes('grading')) {
+                return responses.authenticity[Math.floor(Math.random() * responses.authenticity.length)];
+            } else {
+                return responses.default[Math.floor(Math.random() * responses.default.length)];
+            }
+        }
+        
+        function handleChatKeyPress(event) {
+            if (event.key === 'Enter') {
+                sendMessage();
+            }
+        }
+        
+        // Hero chat functions
+        function sendHeroMessage() {
+            const input = document.getElementById('heroMessageInput');
+            const message = input.value.trim();
+            
+            if (message) {
+                addChatMessage('user', message, true);
+                input.value = '';
+                
+                // Simulate AI response
+                setTimeout(() => {
+                    const aiResponse = generateAIResponse(message);
+                    addChatMessage('ai', aiResponse, true);
+                    
+                    // Randomly suggest scholar consultation (30% chance)
+                    if (Math.random() > 0.7) {
+                        setTimeout(() => {
+                            const scholarSuggestion = `Would you like me to connect you with a verified Islamic scholar for more personalized guidance on this topic? I can help you find someone who specializes in this area.`;
+                            addChatMessage('scholar-suggestion', scholarSuggestion, true);
+                        }, 2000);
+                    }
+                }, 1000);
+            }
+        }
+        
+        function handleHeroChatKeyPress(event) {
+            if (event.key === 'Enter') {
+                sendHeroMessage();
+            }
+        }
+        
+        // Hadith chat functions
+        function sendHadithMessage() {
+            const input = document.getElementById('hadithMessageInput');
+            const message = input.value.trim();
+            
+            if (message) {
+                addChatMessage('user', message, false, true);
+                input.value = '';
+                
+                // Simulate AI response
+                setTimeout(() => {
+                    const aiResponse = generateHadithResponse(message);
+                    addChatMessage('ai', aiResponse, false, true);
+                    
+                    // Randomly suggest scholar consultation (30% chance)
+                    if (Math.random() > 0.7) {
+                        setTimeout(() => {
+                            const scholarSuggestion = `Would you like me to connect you with a verified Hadith scholar for more personalized guidance on this topic? I can help you find someone who specializes in this area.`;
+                            addChatMessage('scholar-suggestion', scholarSuggestion, false, true);
+                        }, 2000);
+                    }
+                }, 1000);
+            }
+        }
+        
+        function handleHadithChatKeyPress(event) {
+            if (event.key === 'Enter') {
+                sendHadithMessage();
+            }
+        }
+        
+        // Utility functions
+        function scrollToSection(sectionId) {
+            const section = document.getElementById(sectionId);
+            if (section) {
+                section.scrollIntoView({ behavior: 'smooth' });
+            }
+        }
+        
+        function showNotification(title, message) {
+            const notification = document.getElementById('notification');
+            const notificationTitle = document.querySelector('.notification-title');
+            const notificationMessage = document.querySelector('.notification-message');
+            
+            notificationTitle.textContent = title;
+            notificationMessage.textContent = message;
+            
+            notification.classList.add('show');
+            
+            setTimeout(() => {
+                hideNotification();
+            }, 5000);
+        }
+        
+        function hideNotification() {
+            const notification = document.getElementById('notification');
+            notification.classList.remove('show');
+        }
+        
+        // Header scroll effect
+        window.addEventListener('scroll', function() {
+            const header = document.querySelector('header');
+            if (window.scrollY > 100) {
+                header.style.background = 'rgba(10, 25, 47, 0.95)';
+                header.style.boxShadow = '0 2px 20px rgba(0, 0, 0, 0.3)';
+            } else {
+                header.style.background = 'rgba(10, 25, 47, 0.8)';
+                header.style.boxShadow = 'none';
+            }
+        });
+        
+        // Add some interactive animations
+        document.addEventListener('DOMContentLoaded', function() {
+            // Animate cards on scroll
+            const observerOptions = {
+                threshold: 0.1,
+                rootMargin: '0px 0px -50px 0px'
+            };
+            
+            const observer = new IntersectionObserver(function(entries) {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.style.opacity = '1';
+                        entry.target.style.transform = 'translateY(0)';
+                    }
+                });
+            }, observerOptions);
+            
+            // Observe all cards
+            document.querySelectorAll('.feature-card, .pricing-card, .testimonial-card, .scholar-card, .scholar-category-card, .why-choose-card, .tafsir-card, .hadith-card').forEach(card => {
+                card.style.opacity = '0';
+                card.style.transform = 'translateY(30px)';
+                card.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+                observer.observe(card);
+            });
+        });
+    </script>
+</body>
+</html>
