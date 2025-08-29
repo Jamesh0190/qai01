@@ -57,7 +57,7 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: radial-gradient(circle at center, rgba(10, 25, 47, 0.8) 0%, rgba(10, 25, 47, 0.95) 100%);
+            background: radial-gradient(circle at center, rgba(10, 25, 47, 0.7) 0%, rgba(10, 25, 47, 0.9) 100%);
             z-index: 0;
             pointer-events: none;
         }
@@ -156,7 +156,7 @@
             text-align: center;
             position: relative;
             overflow: hidden;
-            background: linear-gradient(180deg, rgba(10, 25, 47, 0.9) 0%, rgba(10, 25, 47, 0.7) 100%);
+            background: linear-gradient(180deg, rgba(10, 25, 47, 0.8) 0%, rgba(10, 25, 47, 0.6) 100%);
             background-image: var(--islamic-pattern);
         }
         
@@ -2474,6 +2474,7 @@
         let mouseX = 0, mouseY = 0;
         let windowHalfX = window.innerWidth / 2;
         let windowHalfY = window.innerHeight / 2;
+        let time = 0;
         
         function initThreeJS() {
             // Create scene
@@ -2484,91 +2485,132 @@
             camera.position.z = 1000;
             
             // Create renderer
-            renderer = new THREE.WebGLRenderer({ alpha: true });
+            renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
             renderer.setSize(window.innerWidth, window.innerHeight);
             renderer.setPixelRatio(window.devicePixelRatio);
             document.getElementById('three-container').appendChild(renderer.domElement);
             
-            // Create Islamic geometric pattern
-            const patternSize = 50;
-            const patternGeometry = new THREE.BufferGeometry();
-            const patternVertices = [];
-            const patternColors = [];
+            // Create impressive particle system with Islamic geometric patterns
+            const particleCount = 1200;
+            const positions = new Float32Array(particleCount * 3);
+            const colors = new Float32Array(particleCount * 3);
+            const sizes = new Float32Array(particleCount);
+            const speeds = new Float32Array(particleCount);
+            const originalPositions = new Float32Array(particleCount * 3);
             
-            // Create hexagonal pattern
-            for (let i = 0; i < 100; i++) {
-                const angle = (i / 100) * Math.PI * 2;
-                const radius = 300 + Math.random() * 400;
-                const height = (Math.random() - 0.5) * 600;
+            // Define Islamic-inspired color palette (green and gold)
+            const greenColor = new THREE.Color(0x0a7e4e);
+            const goldColor = new THREE.Color(0xf5c211);
+            
+            // Create particles in Islamic geometric patterns
+            for (let i = 0; i < particleCount; i++) {
+                const angle = (i / particleCount) * Math.PI * 2;
+                const radius = 200 + Math.random() * 600;
+                const height = (Math.random() - 0.5) * 1200;
                 
-                // Central point
-                patternVertices.push(
-                    Math.cos(angle) * radius,
-                    height,
-                    Math.sin(angle) * radius
-                );
+                // Create Islamic geometric patterns
+                const patternType = Math.floor(Math.random() * 5);
                 
-                // Hexagon points
-                for (let j = 0; j < 6; j++) {
-                    const hexAngle = angle + (j / 6) * Math.PI * 2;
-                    const hexRadius = 30;
-                    
-                    patternVertices.push(
-                        Math.cos(hexAngle) * hexRadius + Math.cos(angle) * radius,
-                        height + (Math.random() - 0.5) * 20,
-                        Math.sin(hexAngle) * hexRadius + Math.sin(angle) * radius
-                    );
+                switch (patternType) {
+                    case 0: // Circular pattern (representing unity)
+                        positions[i * 3] = Math.cos(angle) * radius;
+                        positions[i * 3 + 1] = height;
+                        positions[i * 3 + 2] = Math.sin(angle) * radius;
+                        break;
+                    case 1: // Eight-pointed star (representing light)
+                        const starRadius = radius * (0.6 + 0.4 * Math.cos(angle * 8));
+                        positions[i * 3] = Math.cos(angle) * starRadius;
+                        positions[i * 3 + 1] = height;
+                        positions[i * 3 + 2] = Math.sin(angle) * starRadius;
+                        break;
+                    case 2: // Hexagonal pattern (representing perfection)
+                        const hexRadius = radius * (0.8 + 0.2 * Math.cos(angle * 6));
+                        positions[i * 3] = Math.cos(angle) * hexRadius;
+                        positions[i * 3 + 1] = height;
+                        positions[i * 3 + 2] = Math.sin(angle) * hexRadius;
+                        break;
+                    case 3: // Spiral pattern (representing journey)
+                        const spiralRadius = (i / particleCount) * 800;
+                        positions[i * 3] = Math.cos(angle * 6) * spiralRadius;
+                        positions[i * 3 + 1] = height;
+                        positions[i * 3 + 2] = Math.sin(angle * 6) * spiralRadius;
+                        break;
+                    case 4: // Crescent pattern (representing Islam)
+                        const crescentRadius = radius * (0.7 + 0.3 * Math.sin(angle * 2));
+                        positions[i * 3] = Math.cos(angle) * crescentRadius;
+                        positions[i * 3 + 1] = height;
+                        positions[i * 3 + 2] = Math.sin(angle) * crescentRadius;
+                        break;
                 }
                 
-                // Add colors
-                const colorOptions = [
-                    new THREE.Color(0x0a7e4e), // Primary green
-                    new THREE.Color(0x1a5fb4), // Secondary blue
-                    new THREE.Color(0xf5c211), // Accent gold
-                ];
+                // Store original positions for animation
+                originalPositions[i * 3] = positions[i * 3];
+                originalPositions[i * 3 + 1] = positions[i * 3 + 1];
+                originalPositions[i * 3 + 2] = positions[i * 3 + 2];
                 
-                const color = colorOptions[Math.floor(Math.random() * colorOptions.length)];
-                for (let k = 0; k < 7; k++) {
-                    patternColors.push(color.r, color.g, color.b);
+                // Assign colors (green and gold only)
+                if (Math.random() > 0.5) {
+                    colors[i * 3] = greenColor.r;
+                    colors[i * 3 + 1] = greenColor.g;
+                    colors[i * 3 + 2] = greenColor.b;
+                } else {
+                    colors[i * 3] = goldColor.r;
+                    colors[i * 3 + 1] = goldColor.g;
+                    colors[i * 3 + 2] = goldColor.b;
                 }
+                
+                // Larger particle sizes for visibility
+                sizes[i] = Math.random() * 12 + 8;
+                
+                // Random speeds for movement
+                speeds[i] = Math.random() * 0.8 + 0.2;
             }
             
-            patternGeometry.setAttribute('position', new THREE.Float32BufferAttribute(patternVertices, 3));
-            patternGeometry.setAttribute('color', new THREE.Float32BufferAttribute(patternColors, 3));
+            // Create particle geometry
+            const particleGeometry = new THREE.BufferGeometry();
+            particleGeometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+            particleGeometry.setAttribute('color', new THREE.BufferAttribute(colors, 3));
+            particleGeometry.setAttribute('size', new THREE.BufferAttribute(sizes, 1));
+            particleGeometry.setAttribute('speed', new THREE.BufferAttribute(speeds, 1));
+            particleGeometry.setAttribute('originalPosition', new THREE.BufferAttribute(originalPositions, 3));
             
-            const patternMaterial = new THREE.PointsMaterial({
-                size: 3,
+            // Create particle material with enhanced properties
+            const particleMaterial = new THREE.PointsMaterial({
+                size: 8,
                 vertexColors: true,
                 transparent: true,
-                opacity: 0.8,
+                opacity: 1,
                 sizeAttenuation: true,
-                blending: THREE.AdditiveBlending
+                blending: THREE.AdditiveBlending,
+                depthWrite: false
             });
             
-            particleSystem = new THREE.Points(patternGeometry, patternMaterial);
+            // Create particle system
+            particleSystem = new THREE.Points(particleGeometry, particleMaterial);
             scene.add(particleSystem);
             
-            // Create connection lines between nearby points
+            // Create connection lines between nearby particles
             const lineMaterial = new THREE.LineBasicMaterial({ 
                 color: 0x0a7e4e, 
-                opacity: 0.2, 
-                transparent: true 
+                opacity: 0.6, 
+                transparent: true,
+                blending: THREE.AdditiveBlending
             });
             
             connectionLines = new THREE.Group();
             
-            for (let i = 0; i < patternVertices.length; i += 7) {
-                for (let j = i + 7; j < patternVertices.length; j += 7) {
-                    const distance = Math.sqrt(
-                        Math.pow(patternVertices[i] - patternVertices[j], 2) +
-                        Math.pow(patternVertices[i + 1] - patternVertices[j + 1], 2) +
-                        Math.pow(patternVertices[i + 2] - patternVertices[j + 2], 2)
-                    );
+            // Create connections between particles that are close to each other
+            for (let i = 0; i < particleCount; i += 15) {
+                for (let j = i + 15; j < particleCount; j += 15) {
+                    const dx = positions[i * 3] - positions[j * 3];
+                    const dy = positions[i * 3 + 1] - positions[j * 3 + 1];
+                    const dz = positions[i * 3 + 2] - positions[j * 3 + 2];
+                    const distance = Math.sqrt(dx * dx + dy * dy + dz * dz);
                     
-                    if (distance < 200) {
+                    if (distance < 300) {
                         const geometry = new THREE.BufferGeometry().setFromPoints([
-                            new THREE.Vector3(patternVertices[i], patternVertices[i + 1], patternVertices[i + 2]),
-                            new THREE.Vector3(patternVertices[j], patternVertices[j + 1], patternVertices[j + 2])
+                            new THREE.Vector3(positions[i * 3], positions[i * 3 + 1], positions[i * 3 + 2]),
+                            new THREE.Vector3(positions[j * 3], positions[j * 3 + 1], positions[j * 3 + 2])
                         ]);
                         const line = new THREE.Line(geometry, lineMaterial);
                         connectionLines.add(line);
@@ -2578,11 +2620,12 @@
             
             scene.add(connectionLines);
             
-            // Add lights
-            const ambientLight = new THREE.AmbientLight(0xffffff, 0.4);
+            // Add ambient light for better visibility
+            const ambientLight = new THREE.AmbientLight(0xffffff, 0.6);
             scene.add(ambientLight);
             
-            const directionalLight = new THREE.DirectionalLight(0xffffff, 0.6);
+            // Add directional light
+            const directionalLight = new THREE.DirectionalLight(0xffffff, 0.8);
             directionalLight.position.set(1, 1, 1);
             scene.add(directionalLight);
             
@@ -2595,8 +2638,8 @@
         }
         
         function onDocumentMouseMove(event) {
-            mouseX = event.clientX - windowHalfX;
-            mouseY = event.clientY - windowHalfY;
+            mouseX = (event.clientX - windowHalfX) * 0.8;
+            mouseY = (event.clientY - windowHalfY) * 0.8;
         }
         
         function onWindowResize() {
@@ -2612,21 +2655,58 @@
         function animate() {
             requestAnimationFrame(animate);
             
-            // Update camera position based on mouse
-            camera.position.x += (mouseX * 0.3 - camera.position.x) * 0.05;
-            camera.position.y += (-mouseY * 0.3 - camera.position.y) * 0.05;
+            // Update time for animations
+            time += 0.015;
+            
+            // Update camera position based on mouse with smoother movement
+            camera.position.x += (mouseX - camera.position.x) * 0.08;
+            camera.position.y += (-mouseY - camera.position.y) * 0.08;
             camera.lookAt(scene.position);
             
-            // Rotate particle system
+            // Animate particles with upward movement and Islamic-inspired patterns
             if (particleSystem) {
-                particleSystem.rotation.x += 0.0005;
-                particleSystem.rotation.y += 0.001;
+                const positions = particleSystem.geometry.attributes.position.array;
+                const originalPositions = particleSystem.geometry.attributes.originalPosition.array;
+                const speeds = particleSystem.geometry.attributes.speed.array;
+                
+                for (let i = 0; i < positions.length; i += 3) {
+                    const speedIndex = i / 3;
+                    
+                    // Move particles upward (representing ascension and spiritual elevation)
+                    positions[i + 1] += speeds[speedIndex] * 2;
+                    
+                    // Reset particles that go too high
+                    if (positions[i + 1] > 800) {
+                        positions[i + 1] = -800;
+                    }
+                    
+                    // Add organic floating movement
+                    positions[i] = originalPositions[i] + Math.sin(time * speeds[speedIndex] + i) * 15;
+                    positions[i + 2] = originalPositions[i + 2] + Math.cos(time * speeds[speedIndex] * 0.7 + i) * 12;
+                    
+                    // Add subtle pulsing effect
+                    const pulse = Math.sin(time * 3 + i * 0.1) * 5;
+                    positions[i] += pulse;
+                    positions[i + 2] += pulse * 0.5;
+                }
+                
+                particleSystem.geometry.attributes.position.needsUpdate = true;
+                
+                // Rotate particle system slowly (representing the eternal nature of divine knowledge)
+                particleSystem.rotation.x += 0.0008;
+                particleSystem.rotation.y += 0.0012;
             }
             
-            // Rotate connection lines
+            // Animate connection lines
             if (connectionLines) {
-                connectionLines.rotation.x += 0.0003;
-                connectionLines.rotation.y += 0.0007;
+                connectionLines.rotation.x += 0.0005;
+                connectionLines.rotation.y += 0.0009;
+                
+                // Create pulsing effect for connection lines (representing the flow of knowledge)
+                const pulse = Math.sin(time * 2.5) * 0.3 + 0.5;
+                connectionLines.children.forEach(line => {
+                    line.material.opacity = pulse;
+                });
             }
             
             renderer.render(scene, camera);
