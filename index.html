@@ -1684,6 +1684,78 @@
             </div>
         </div>
     </section>
+
+        <!-- Scholar Connection Section -->
+    <section class="scholar-connection" id="scholars">
+        <div class="container">
+            <h2 class="section-title">Connect with Islamic Scholars</h2>
+            <p style="text-align: center; margin-bottom: 3rem; color: var(--text-dim); max-width: 600px; margin-left: auto; margin-right: auto;">
+                Get personalized guidance from verified Islamic scholars to complement AI insights. Our scholars can help confirm, verify, and enhance your understanding of the Qur'an and Hadith.
+            </p>
+            
+            <div class="scholar-categories">
+                <div class="scholar-category-card" onclick="filterScholars('tafsir')">
+                    <div class="scholar-category-icon">📖</div>
+                    <h3>Tafsir Experts</h3>
+                    <p>Specialists in Qur'anic exegesis and interpretation</p>
+                    <span class="scholar-count">89 scholars</span>
+                </div>
+                
+                <div class="scholar-category-card" onclick="filterScholars('hadith')">
+                    <div class="scholar-category-icon">📜</div>
+                    <h3>Hadith Scholars</h3>
+                    <p>Experts in prophetic traditions and narrations</p>
+                    <span class="scholar-count">76 scholars</span>
+                </div>
+                
+                <div class="scholar-category-card" onclick="filterScholars('fiqh')">
+                    <div class="scholar-category-icon">⚖️</div>
+                    <h3>Fiqh Specialists</h3>
+                    <p>Islamic jurisprudence and legal experts</p>
+                    <span class="scholar-count">94 scholars</span>
+                </div>
+                
+                <div class="scholar-category-card" onclick="filterScholars('arabic')">
+                    <div class="scholar-category-icon">🔤</div>
+                    <h3>Arabic Language</h3>
+                    <p>Classical Arabic and Qur'anic linguistics</p>
+                    <span class="scholar-count">67 scholars</span>
+                </div>
+                
+                <div class="scholar-category-card" onclick="filterScholars('tajweed')">
+                    <div class="scholar-category-icon">🎧</div>
+                    <h3>Tajweed & Recitation</h3>
+                    <p>Experts in proper Qur'anic pronunciation</p>
+                    <span class="scholar-count">82 scholars</span>
+                </div>
+                
+                <div class="scholar-category-card" onclick="filterScholars('aqeedah')">
+                    <div class="scholar-category-icon">🕌</div>
+                    <h3>Aqeedah & Theology</h3>
+                    <p>Islamic creed and belief specialists</p>
+                    <span class="scholar-count">71 scholars</span>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Scholar Directory Section -->
+    <section class="scholar-directory" id="scholar-directory">
+        <div class="container">
+            <h2 class="section-title">Featured Scholars</h2>
+            
+            <div class="scholar-filters">
+                <button class="filter-button active" onclick="filterScholars('all')">All Scholars</button>
+                <button class="filter-button" onclick="filterScholars('available')">Available Now</button>
+                <button class="filter-button" onclick="filterScholars('top-rated')">Top Rated</button>
+                <button class="filter-button" onclick="filterScholars('new')">New Scholars</button>
+            </div>
+            
+            <div class="scholars-grid" id="scholarsGrid">
+                <!-- Scholar cards will be populated by JavaScript -->
+            </div>
+        </div>
+    </section>
     
     <!-- Tafsir Explorer Section -->
     <section class="tafsir-explorer" id="tafsir">
@@ -1817,78 +1889,6 @@
                     <input type="text" id="hadithMessageInput" placeholder="Search for Hadith..." onkeypress="handleHadithChatKeyPress(event)">
                     <button onclick="sendHadithMessage()">📤</button>
                 </div>
-            </div>
-        </div>
-    </section>
-    
-    <!-- Scholar Connection Section -->
-    <section class="scholar-connection" id="scholars">
-        <div class="container">
-            <h2 class="section-title">Connect with Islamic Scholars</h2>
-            <p style="text-align: center; margin-bottom: 3rem; color: var(--text-dim); max-width: 600px; margin-left: auto; margin-right: auto;">
-                Get personalized guidance from verified Islamic scholars to complement AI insights. Our scholars can help confirm, verify, and enhance your understanding of the Qur'an and Hadith.
-            </p>
-            
-            <div class="scholar-categories">
-                <div class="scholar-category-card" onclick="filterScholars('tafsir')">
-                    <div class="scholar-category-icon">📖</div>
-                    <h3>Tafsir Experts</h3>
-                    <p>Specialists in Qur'anic exegesis and interpretation</p>
-                    <span class="scholar-count">89 scholars</span>
-                </div>
-                
-                <div class="scholar-category-card" onclick="filterScholars('hadith')">
-                    <div class="scholar-category-icon">📜</div>
-                    <h3>Hadith Scholars</h3>
-                    <p>Experts in prophetic traditions and narrations</p>
-                    <span class="scholar-count">76 scholars</span>
-                </div>
-                
-                <div class="scholar-category-card" onclick="filterScholars('fiqh')">
-                    <div class="scholar-category-icon">⚖️</div>
-                    <h3>Fiqh Specialists</h3>
-                    <p>Islamic jurisprudence and legal experts</p>
-                    <span class="scholar-count">94 scholars</span>
-                </div>
-                
-                <div class="scholar-category-card" onclick="filterScholars('arabic')">
-                    <div class="scholar-category-icon">🔤</div>
-                    <h3>Arabic Language</h3>
-                    <p>Classical Arabic and Qur'anic linguistics</p>
-                    <span class="scholar-count">67 scholars</span>
-                </div>
-                
-                <div class="scholar-category-card" onclick="filterScholars('tajweed')">
-                    <div class="scholar-category-icon">🎧</div>
-                    <h3>Tajweed & Recitation</h3>
-                    <p>Experts in proper Qur'anic pronunciation</p>
-                    <span class="scholar-count">82 scholars</span>
-                </div>
-                
-                <div class="scholar-category-card" onclick="filterScholars('aqeedah')">
-                    <div class="scholar-category-icon">🕌</div>
-                    <h3>Aqeedah & Theology</h3>
-                    <p>Islamic creed and belief specialists</p>
-                    <span class="scholar-count">71 scholars</span>
-                </div>
-            </div>
-        </div>
-    </section>
-    
-    <!-- Scholar Directory Section -->
-    <section class="scholar-directory" id="scholar-directory">
-        <div class="container">
-            <h2 class="section-title">Featured Scholars</h2>
-            
-            <div class="scholar-filters">
-                <button class="filter-button active" onclick="filterScholars('all')">All Scholars</button>
-                <button class="filter-button" onclick="filterScholars('available')">Available Now</button>
-                <button class="filter-button" onclick="filterScholars('top-rated')">Top Rated</button>
-                <button class="filter-button" onclick="filterScholars('new')">New Scholars</button>
-            </div>
-            
-            <div class="scholars-grid" id="scholarsGrid">
-                <!-- Scholar cards will be populated by JavaScript -->
             </div>
         </div>
     </section>
